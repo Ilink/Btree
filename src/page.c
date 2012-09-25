@@ -44,3 +44,13 @@ int insert_into_page(page *p, node *n){
 
 	return 1;
 }
+
+int remove(page_node *n){
+	page_node *next = n->next;
+	page_node *prev = n->prev;
+
+	prev->next = next;
+	next->prev = prev;
+
+	// Free could go here
+}

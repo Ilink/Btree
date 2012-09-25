@@ -24,6 +24,5 @@ page* make_test_page(int *values){
 		iter = iter->next;
 	} while(iter != NULL);
 
-	// page_node* pn = (page_node *) malloc(sizeof(page_node));
 	return p;
 }

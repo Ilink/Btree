@@ -23,8 +23,6 @@ typedef struct {
 	page_node *tail;
 } page;
 
-// typedef struct page_node page;
-
 int insert_into_page(page *p, node *n);
 
 #endif

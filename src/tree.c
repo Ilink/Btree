@@ -43,13 +43,3 @@ Private version of find. Suitable for recursive operations.
 node* _find(page_node *p, int needle){
 
 }
-
-int remove(page_node *n){
-	page_node *next = n->next;
-	page_node *prev = n->prev;
-
-	prev->next = next;
-	next->prev = prev;
-
-	// Free could go here
-}
