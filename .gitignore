@@ -13,3 +13,6 @@ build
 *.lai
 *.la
 *.a
+
+# Other Stuff
+*.stackdump
