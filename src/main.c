@@ -3,7 +3,7 @@
 #include <stdlib.h>
 
 #include "main.h"
-#include "tree.h"
+#include "btree.h"
 #include "page.h"
 #include "test.h"
 

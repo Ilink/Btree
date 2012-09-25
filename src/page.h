@@ -23,6 +23,9 @@ typedef struct {
 	page_node *tail;
 } page;
 
+
+// Forward Declarations
 int insert_into_page(page *p, node *n);
+int remove_page_node(page_node *n);
 
 #endif
