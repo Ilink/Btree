@@ -1,6 +1,8 @@
 #ifndef BTREE_H
 #define BTREE_H
 
+#include "page.h"
+
 typedef struct tree_node tree_node;
 struct tree_node {
 	tree_node *children[50];
