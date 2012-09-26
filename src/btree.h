@@ -4,10 +4,18 @@
 #include "page.h"
 
 typedef struct tree_node tree_node;
+typedef const int U = 5; // this size is temporary
 struct tree_node {
-	tree_node *children[50];
-	tree_node *parent;
-	page_node *pn;
+	page *child;
+	page *parent;
 };
+
+typedef struct {
+	page *root;
+} tree;
+
+// Forward Declarations
+int insert(node *n, tree *t);
+node* find(int needle);
 
 #endif
