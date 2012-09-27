@@ -39,6 +39,7 @@ int insert_into_page(page *p, node *n){
 		p->head = new_page_node;
 	}
 	
+	p->num_page_nodes++;
 	// p->tail = new_page_node;
 	// new_page_node->prev = tail_temp;
 

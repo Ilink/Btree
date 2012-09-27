@@ -1,5 +1,6 @@
 #ifndef PAGE_H
 #define PAGE_H
+#include <stdbool.h>
 
 
 typedef struct {
@@ -24,11 +25,13 @@ struct page_node {
 struct page {
 	page_node *head;
 	page_node *tail;
+	int num_page_nodes;
 };
 
 
 // Forward Declarations
 int insert_into_page(page *p, node *n);
 int remove_page_node(page_node *n);
+bool is_full(page *p);
 
 #endif
