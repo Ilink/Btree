@@ -12,16 +12,19 @@ typedef struct {
 Node for the doubly-linked list used by Page.
 */
 typedef struct page_node page_node;
+typedef struct page page;
 struct page_node {
 	page_node *prev;
 	page_node *next;
+	page *child;
+	page *parent;
 	node *n;
 };
 
-typedef struct {
+struct page {
 	page_node *head;
 	page_node *tail;
-} page;
+};
 
 
 // Forward Declarations

@@ -3,12 +3,7 @@
 
 #include "page.h"
 
-typedef struct tree_node tree_node;
-typedef const int U = 5; // this size is temporary
-struct tree_node {
-	page *child;
-	page *parent;
-};
+const int U = 5; // this size is temporary
 
 typedef struct {
 	page *root;
