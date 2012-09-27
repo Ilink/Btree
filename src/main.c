@@ -9,7 +9,7 @@
 
 int main(int argc, char **argv){
 
-	int test_vals[] = {1,2,3,4,5, NULL};
+	int test_vals[] = {1,2,3,4,5,6, NULL};
 	page_node* p = make_test_page(test_vals);
 
 }

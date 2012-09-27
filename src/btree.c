@@ -34,6 +34,7 @@ int insert(node *n, tree *t){
 	while not null & new val > current val
 		move forward in list
 	*/
+	insert_into_page
 
 	/*
 	if page is full, split it

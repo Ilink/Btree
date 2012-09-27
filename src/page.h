@@ -2,7 +2,6 @@
 #define PAGE_H
 #include <stdbool.h>
 
-
 typedef struct {
 	int val;
 	int ext; // The external database location
@@ -30,6 +29,7 @@ struct page {
 
 
 // Forward Declarations
+extern const int U;
 int insert_into_page(page *p, node *n);
 int remove_page_node(page_node *n);
 bool is_full(page *p);

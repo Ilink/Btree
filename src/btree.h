@@ -3,8 +3,6 @@
 
 #include "page.h"
 
-#define U 5; // this size is temporary
-
 typedef struct {
 	page *root;
 } tree;

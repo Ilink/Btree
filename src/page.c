@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+const int U = 5; // this size is temporary
 
 /*
 This is unused for now.
@@ -23,27 +24,46 @@ int insert_into_page(page *p, node *n){
 	new_page_node->n = n;
 	page_node *tail_temp = p->tail;
 
-	if(p->tail == NULL && p->head == NULL){
-		printf("empty list\n");
-		p->tail = new_page_node;
-	} else if(p->head == NULL){
-		printf("no head\n");
-		p->tail->next = new_page_node;
-		p->head = new_page_node;
-		new_page_node->prev = p->tail;
-	} else {
-		printf("list has head and tail\n");
-		p->head->next = new_page_node;
-		new_page_node->next = NULL;
-		new_page_node->prev = p->head;
-		p->head = new_page_node;
+	// Only insert below maximum threshold
+	if((p->num_page_nodes + 1) <= 5){
+		if(p->tail == NULL && p->head == NULL){
+			printf("empty list\n");
+			p->tail = new_page_node;
+		} else if(p->head == NULL){
+			printf("no head\n");
+			p->tail->next = new_page_node;
+			p->head = new_page_node;
+			new_page_node->prev = p->tail;
+		} else {
+			printf("list has head and tail\n");
+			p->head->next = new_page_node;
+			new_page_node->next = NULL;
+			new_page_node->prev = p->head;
+			p->head = new_page_node;
+		}
+		
+		p->num_page_nodes++;
+		return 1;
 	}
-	
-	p->num_page_nodes++;
-	// p->tail = new_page_node;
-	// new_page_node->prev = tail_temp;
 
-	return 1;
+	// Allows detection of overflow
+	// Tree may decide to split the page if it overflows
+	return 0;
+}
+
+/*
+@insert_into_page_sorted
+Inserts a node into a page, maintaining ascending order
+All b-tree nodes are arranged this way.
+
+This might have some duplicate code from insert_into_page
+but it shouldn't really be a big deal since it's all pretty 
+standard linked-list type stuff.
+
+I guess the checks could go in another function shared by both...
+*/
+int insert_into_page_sorted(page *p, node *n){
+
 }
 
 int remove_page_node(page_node *n){
