@@ -62,7 +62,7 @@ This might have some duplicate code from insert_into_page
 but it shouldn't really be a big deal since it's all pretty 
 standard linked-list type stuff.
 
-I guess the checks could go in another function shared by both...
+This needs to be a binary search instead.
 */
 int insert_into_page_sorted(page *p, node *n){
 	page_node *new_page_node = (page_node*) malloc(sizeof (page_node));
@@ -72,45 +72,60 @@ int insert_into_page_sorted(page *p, node *n){
 	page_node *tail_temp = p->tail;
 
 	// Only insert below maximum threshold
-	if((p->num_page_nodes + 1) <= 5){
+	if((p->num_page_nodes + 1) <= 5){ //todo: un-hardcode this value
+		
+		// It is very simple to deal with empty/one-node lists
 		if(p->tail == NULL && p->head == NULL){
 			printf("empty list\n");
-			// no need to compare here
 			p->tail = new_page_node;
 		} else if(p->head == NULL){
 			printf("no head\n");
-			if(p->tail->n->val > n->val){
+			if(p->tail->n->val < n->val){
+				printf("tail < val");
 				p->head = new_page_node;
 			} else { // swap head and tail
+				printf("val < tail: val is new tail!");
 				p->head = p->tail;
-				p->head = new_page_node;
+				p->tail = new_page_node;
 			}
 			p->tail->next = p->head;
 			p->head->prev = p->tail;
-		} else {
-			printf("list has head and tail\n");
-			// insert in order, within the current list
-			// this could use a binary search
-
+		} else { // insert in order; head and tail are all setup
+			// todo: is this the most efficient way?		
 			page_node *iter = p->tail;
-			while(iter != NULL){
+			for(int i = 0; iter != NULL; i++) {
+				printf("iter (%i) val: %i\n", i, iter->n->val);
 				if(n->val < iter->n->val){
-					iter->prev = 
+					if(iter->prev == NULL){ // we're at the start
+						printf("insertng at start\n");
+						iter->prev = new_page_node;
+						new_page_node->next = iter;
+						p->tail = new_page_node;
+					} else { // we're in the middle-ish
+						printf("inserting in middle-ish\n");
+						iter->prev->next = new_page_node;
+						new_page_node->prev = iter->prev;
+						new_page_node->next = iter;
+						iter->prev = new_page_node;
+					}
 					break;
 				}
 				iter = iter->next;
 			}
-
-			// p->head->next = new_page_node;
-			// new_page_node->next = NULL;
-			// new_page_node->prev = p->head;
-			// p->head = new_page_node;
+			// The value is larger than all the values in the list
+			// Therefore, we must insert after the last node
+			if(iter == NULL){
+				printf("inserting at end\n");
+				p->head->next = new_page_node;
+				new_page_node->next = NULL;
+				new_page_node->prev = p->head;
+				p->head = new_page_node;
+			}
+			
 		}
-		
 		p->num_page_nodes++;
 		return 1;
 	}
-
 	// Allows detection of overflow
 	// Tree may decide to split the page if it overflows
 	return 0;
