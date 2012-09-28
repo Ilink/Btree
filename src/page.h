@@ -21,6 +21,11 @@ struct page_node {
 	node *n;
 };
 
+typedef struct {
+	page_node *middle;
+	page *new_page;
+} split;
+
 struct page {
 	page_node *head;
 	page_node *tail;

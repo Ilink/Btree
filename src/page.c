@@ -26,8 +26,9 @@ int insert_into_page(page *p, node *n){
 	new_page_node->prev = NULL;
 	page_node *tail_temp = p->tail;
 
-	// Only insert below maximum threshold
-	if((p->num_page_nodes + 1) <= 5){
+	// Only insert below maximum threshold +1
+	// +1 because it should be allowed to overflow before being split
+	if((p->num_page_nodes + 1) <= U){
 		if(p->tail == NULL && p->head == NULL){
 			printf("empty list\n");
 			p->tail = new_page_node;
@@ -50,7 +51,22 @@ int insert_into_page(page *p, node *n){
 
 	// Allows detection of overflow
 	// Tree may decide to split the page if it overflows
-	return 0;
+
+	// i sense an off-by-one error...
+	if(p->num_page_nodes == U) {
+		return 0;
+	}
+	return 1;
+}
+
+/*
+@split_page
+Returns a struct filled with:
+	-> new page
+	-> middle node
+*/
+page* split_page(page* p){
+
 }
 
 /*
@@ -91,7 +107,7 @@ int insert_into_page_sorted(page *p, node *n){
 			p->tail->next = p->head;
 			p->head->prev = p->tail;
 		} else { // insert in order; head and tail are all setup
-			// todo: is this the most efficient way?		
+			// todo: is this the most efficient way? could i use binary search?	
 			page_node *iter = p->tail;
 			for(int i = 0; iter != NULL; i++) {
 				printf("iter (%i) val: %i\n", i, iter->n->val);
@@ -121,7 +137,6 @@ int insert_into_page_sorted(page *p, node *n){
 				new_page_node->prev = p->head;
 				p->head = new_page_node;
 			}
-			
 		}
 		p->num_page_nodes++;
 		return 1;
