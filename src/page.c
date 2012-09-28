@@ -22,6 +22,8 @@ Inserts a node (n) after the page (p)
 int insert_into_page(page *p, node *n){
 	page_node *new_page_node = (page_node*) malloc(sizeof (page_node));
 	new_page_node->n = n;
+	new_page_node->next = NULL;
+	new_page_node->prev = NULL;
 	page_node *tail_temp = p->tail;
 
 	// Only insert below maximum threshold
@@ -63,7 +65,55 @@ standard linked-list type stuff.
 I guess the checks could go in another function shared by both...
 */
 int insert_into_page_sorted(page *p, node *n){
+	page_node *new_page_node = (page_node*) malloc(sizeof (page_node));
+	new_page_node->n = n;
+	new_page_node->next = NULL;
+	new_page_node->prev = NULL;
+	page_node *tail_temp = p->tail;
 
+	// Only insert below maximum threshold
+	if((p->num_page_nodes + 1) <= 5){
+		if(p->tail == NULL && p->head == NULL){
+			printf("empty list\n");
+			// no need to compare here
+			p->tail = new_page_node;
+		} else if(p->head == NULL){
+			printf("no head\n");
+			if(p->tail->n->val > n->val){
+				p->head = new_page_node;
+			} else { // swap head and tail
+				p->head = p->tail;
+				p->head = new_page_node;
+			}
+			p->tail->next = p->head;
+			p->head->prev = p->tail;
+		} else {
+			printf("list has head and tail\n");
+			// insert in order, within the current list
+			// this could use a binary search
+
+			page_node *iter = p->tail;
+			while(iter != NULL){
+				if(n->val < iter->n->val){
+					iter->prev = 
+					break;
+				}
+				iter = iter->next;
+			}
+
+			// p->head->next = new_page_node;
+			// new_page_node->next = NULL;
+			// new_page_node->prev = p->head;
+			// p->head = new_page_node;
+		}
+		
+		p->num_page_nodes++;
+		return 1;
+	}
+
+	// Allows detection of overflow
+	// Tree may decide to split the page if it overflows
+	return 0;
 }
 
 int remove_page_node(page_node *n){
