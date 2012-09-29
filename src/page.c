@@ -61,12 +61,19 @@ int insert_into_page(page *p, node *n){
 
 /*
 @split_page
-Returns a struct filled with:
-	-> new page
-	-> middle node
+Breaks a page into two pages, down the middle.
+The middle node is returned, with the new page 
+attached as its child.
 */
-page* split_page(page* p){
-
+page_node* split_page(page* p){
+	/*
+	while not at center, advance
+	take center node
+	after center, accumulate nodes in new list
+	center node -> child = accumulated list
+	accumulate list -> parent = center node
+	return center node
+	*/
 }
 
 /*
