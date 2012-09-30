@@ -17,7 +17,6 @@ struct page_node {
 	page_node *prev;
 	page_node *next;
 	page *child;
-	page *parent;
 	node *n;
 };
 
@@ -29,6 +28,7 @@ typedef struct {
 struct page {
 	page_node *head;
 	page_node *tail;
+	page_node *parent;
 	int num_page_nodes;
 };
 
@@ -38,5 +38,7 @@ extern const int U;
 int insert_into_page(page *p, node *n);
 int remove_page_node(page_node *n);
 bool is_full(page *p);
+int insert_into_page_sorted(page *p, node *n);
+page_node* split_page(page* p);
 
 #endif

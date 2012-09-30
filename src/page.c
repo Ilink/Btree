@@ -1,6 +1,7 @@
 #include "page.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 const int U = 5; // this size is temporary
 
@@ -64,16 +65,46 @@ int insert_into_page(page *p, node *n){
 Breaks a page into two pages, down the middle.
 The middle node is returned, with the new page 
 attached as its child.
+
+Page_node is returned instead of page.
+The page_node is generally inserted into another,
+existing page. This is just the way b-trees are constructed.
 */
 page_node* split_page(page* p){
-	/*
-	while not at center, advance
-	take center node
-	after center, accumulate nodes in new list
-	center node -> child = accumulated list
-	accumulate list -> parent = center node
-	return center node
-	*/
+	page *split_page = (page*) malloc(sizeof(page));
+	int center = ceil(p->num_page_nodes / 2);
+	page_node *iter = p->tail;
+	page_node *center_node;
+	for(int i = 0; iter != NULL; i++){
+		if(i == center){
+			center_node = iter;
+			printf("center: %i\n", center_node->n->val);
+			// theoretically, the list could be small enough that this causes
+			// a segfault...fix
+			iter = iter->next;
+			printf("new tail: %i\n", iter->n->val);
+
+			// since the b-tree has these in sorted order
+			// we just need to break off part of it
+			split_page->tail = iter;
+			split_page->head = p->head;
+
+			/*
+			set the child properly
+			*/
+
+			p->head = center_node->prev;
+			center_node->prev->next = NULL;
+			center_node->prev = NULL;
+
+			center_node->child = split_page;
+			split_page->parent = center_node;
+
+			break;
+		}
+		iter = iter->next;
+	}
+	return center_node;
 }
 
 /*
@@ -95,7 +126,7 @@ int insert_into_page_sorted(page *p, node *n){
 	page_node *tail_temp = p->tail;
 
 	// Only insert below maximum threshold
-	if((p->num_page_nodes + 1) <= 5){ //todo: un-hardcode this value
+	if((p->num_page_nodes + 1) <= U){ //todo: un-hardcode this value
 		
 		// It is very simple to deal with empty/one-node lists
 		if(p->tail == NULL && p->head == NULL){
