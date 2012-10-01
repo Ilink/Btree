@@ -27,14 +27,24 @@ int insert(node *n, tree *t){
 		t->root = &p;
 	}
 	page *current_page = t->root;
+	_insert(n, current_page, t);
+}
 
-	int insert_successful = insert_into_page_sorted(current_page, n);
+/*
+@_insert
+Private-ish version of insert.
+*/
+int _insert(node *n, page_node *p, tree *t){
+	int insert_successful = insert_node_into_page_sorted(p, n);
 
 	if(insert_successful){
 		return 1;
-	} else { // page is full
-		page_node* middle = split_page(p);
+	} else if(t->height) { // page is full, try a child
+
 		
+		
+	} else { // at leaf, must split
+		page_node* middle = split_page(p);
 		/*
 		insert new node into parent
 		check overflow
@@ -44,7 +54,7 @@ int insert(node *n, tree *t){
 	}
 
 	/*
-	if page is not full, call insert_into_page_sorted
+	if page is not full, call insert_node_into_page_sorted
 		-> that function automatically checks if page is full
 	if page is a leaf, split the page
 	if page is not a leaf, look for the first value greater than the new value
@@ -52,14 +62,6 @@ int insert(node *n, tree *t){
 
 	i guess that means this is a recursive operation
 	*/
-}
-
-/*
-@_insert
-Private-ish version of insert.
-*/
-int _insert(node *n, page_node *p){
-
 }
 
 /*

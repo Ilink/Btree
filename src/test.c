@@ -39,7 +39,7 @@ page* make_sorted_test_page(int *values){
 
 		n->val = *values;
 		n->ext = 1;
-		insert_into_page_sorted(p, n);
+		insert_node_into_page_sorted(p, n);
 		page_node* iter = p->tail;
 		printf("current list: \t");
 		do {
@@ -50,19 +50,9 @@ page* make_sorted_test_page(int *values){
 		printf("\n");
 	}
 
-	printf("\nnumber of nodes inserted: %i\n", p->num_page_nodes);
-	return p;
-}
-
-page_node* test_split_page(page* p){
-	page_node* middle = split_page(p);
 	
-	printf("values after splitting:\n");
-	page_node* iter = middle->child->tail;
-	while(iter != NULL){
-		printf("val: \t%i\n", iter->n->val);
-		iter = iter->next;
-	}
 
-	return middle;
+	printf("\nnumber of nodes inserted: %i\n", p->num_page_nodes);
+
+	return p;
 }

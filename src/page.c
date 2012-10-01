@@ -62,7 +62,7 @@ int insert_into_page(page *p, node *n){
 }
 
 /*
-@insert_into_page_sorted
+@insert_node_into_page_sorted
 Inserts a node into a page, maintaining ascending order
 All b-tree nodes are arranged this way.
 
@@ -79,68 +79,11 @@ int insert_node_into_page_sorted(page *p, node *n){
 	new_page_node->prev = NULL;
 	page_node *tail_temp = p->tail;
 
-
-
-	// Only insert below maximum threshold
-	if((p->num_page_nodes + 1) <= U){
-		
-		// It is very simple to deal with empty/one-node lists
-		if(p->tail == NULL && p->head == NULL){
-			printf("empty list\n");
-			p->tail = new_page_node;
-		} else if(p->head == NULL){
-			printf("no head\n");
-			if(p->tail->n->val < n->val){
-				printf("tail < val");
-				p->head = new_page_node;
-			} else { // swap head and tail
-				printf("val < tail: val is new tail!");
-				p->head = p->tail;
-				p->tail = new_page_node;
-			}
-			p->tail->next = p->head;
-			p->head->prev = p->tail;
-		} else { // insert in order; head and tail are all setup
-			// todo: is this the most efficient way? could i use binary search?	
-			page_node *iter = p->tail;
-			for(int i = 0; iter != NULL; i++) {
-				printf("iter (%i) val: %i\n", i, iter->n->val);
-				if(n->val < iter->n->val){
-					if(iter->prev == NULL){ // we're at the start
-						printf("insertng at start\n");
-						iter->prev = new_page_node;
-						new_page_node->next = iter;
-						p->tail = new_page_node;
-					} else { // we're in the middle-ish
-						printf("inserting in middle-ish\n");
-						iter->prev->next = new_page_node;
-						new_page_node->prev = iter->prev;
-						new_page_node->next = iter;
-						iter->prev = new_page_node;
-					}
-					break;
-				}
-				iter = iter->next;
-			}
-			// The value is larger than all the values in the list
-			// Therefore, we must insert after the last node
-			if(iter == NULL){
-				printf("inserting at end\n");
-				p->head->next = new_page_node;
-				new_page_node->next = NULL;
-				new_page_node->prev = p->head;
-				p->head = new_page_node;
-			}
-		}
-		p->num_page_nodes++;
-		return 1;
-	}
-	// Allows detection of overflow
-	// Tree may decide to split the page if it overflows
-	return 0;
+	int insert_successful = insert_pnode_into_page_sorted(p, new_page_node);
+	return insert_successful;
 }
 
-int insert_pagenode_into_page_sorted(page *p, page_node *new_page_node){
+int insert_pnode_into_page_sorted(page *p, page_node *new_page_node){
 	// Only insert below maximum threshold
 	if((p->num_page_nodes + 1) <= U){
 		
@@ -150,7 +93,7 @@ int insert_pagenode_into_page_sorted(page *p, page_node *new_page_node){
 			p->tail = new_page_node;
 		} else if(p->head == NULL){
 			printf("no head\n");
-			if(p->tail->n->val < n->val){
+			if(p->tail->n->val < new_page_node->n->val){
 				printf("tail < val");
 				p->head = new_page_node;
 			} else { // swap head and tail
@@ -165,7 +108,7 @@ int insert_pagenode_into_page_sorted(page *p, page_node *new_page_node){
 			page_node *iter = p->tail;
 			for(int i = 0; iter != NULL; i++) {
 				printf("iter (%i) val: %i\n", i, iter->n->val);
-				if(n->val < iter->n->val){
+				if(new_page_node->n->val < iter->n->val){
 					if(iter->prev == NULL){ // we're at the start
 						printf("insertng at start\n");
 						iter->prev = new_page_node;

@@ -38,7 +38,7 @@ extern const int U;
 int insert_into_page(page *p, node *n);
 int remove_page_node(page_node *n);
 bool is_full(page *p);
-int insert_into_page_sorted(page *p, node *n);
+int insert_node_into_page_sorted(page *p, node *n);
 page_node* split_page(page* p);
 
 #endif
