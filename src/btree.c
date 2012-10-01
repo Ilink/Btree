@@ -28,19 +28,29 @@ int insert(node *n, tree *t){
 	}
 	page *current_page = t->root;
 
-	/*
-	insert into page if it is not full (maintain order):
+	int insert_successful = insert_into_page_sorted(current_page, n);
 
-	while not null & new val > current val
-		move forward in list
-	*/
-	// insert_into_page
+	if(insert_successful){
+		return 1;
+	} else { // page is full
+		page_node* middle = split_page(p);
+		
+		/*
+		insert new node into parent
+		check overflow
+		recurse if overflow
+		else return
+		*/
+	}
 
 	/*
-	if page is full, split it
-	the median value goes in the parent
-		which may cause a split in the parent
-	the left and right go in the children, maintaining order (how?)
+	if page is not full, call insert_into_page_sorted
+		-> that function automatically checks if page is full
+	if page is a leaf, split the page
+	if page is not a leaf, look for the first value greater than the new value
+		-> visit that node's children and repeat above steps
+
+	i guess that means this is a recursive operation
 	*/
 }
 
@@ -57,7 +67,8 @@ int _insert(node *n, page_node *p){
 Finds a node within the tree, starting at the root
 This is the public-facing wrapper of _find.
 In order to perform recursion, it needs to know the actual page_node
-Keeping this hidden makes for a simpler interface.
+Keeping the recursive-centric part hidden makes for a simpler interface.
+See '_find'
 */
 node* find(int needle){
 

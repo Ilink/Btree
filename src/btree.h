@@ -5,6 +5,7 @@
 
 typedef struct {
 	page *root;
+	int height; // todo: set this value
 } tree;
 
 // Forward Declarations
