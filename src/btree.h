@@ -11,5 +11,6 @@ typedef struct {
 // Forward Declarations
 int insert(node *n, tree *t);
 node* find(int needle);
+tree* prepare_tree();
 
 #endif

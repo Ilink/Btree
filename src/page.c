@@ -148,6 +148,31 @@ page_node* search_in_page(int val, page* p){
 }
 
 /*
+Find page with smallest larger value
+EG:
+	p => [1,3,6,10,20]
+	needle => 8
+	Would find 10, not 20.
+
+I think this could be sped up with more of a binary
+search approach. But i will worry about that later.
+	=> chop until value stops being larger, is smaller
+	=> then go up the list until the larger value is found
+
+Assumes the list (the page) is in sorted order.
+*/
+page_node* search_page_ceil(int val, page* p){
+	page_node *iter = p->head;
+	while(iter != NULL){
+		if(iter->n->val > val){
+			return iter;
+		}
+		iter = iter->next;
+	}
+	return false;
+}
+
+/*
 @split_page
 Breaks a page into two pages, down the middle.
 The middle node is returned, with the new page 

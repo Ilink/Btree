@@ -14,20 +14,36 @@ The function will iterate over the tree (from the root) until it
 finds an appropriate page to put the node
 
 This is the public version which mostly just finds a home for the node
-The private version actually does the inserting into the linked list.
+The 'private' version actually does the inserting/searching/splitting/hard work.
 
 For testing purposes, page size and max children are both 5
 */
 int insert(node *n, tree *t){
-	/*
-	if root is empty, make a page
-	*/
 	if(t->root == NULL){
 		page p;
 		t->root = &p;
 	}
 	page *current_page = t->root;
 	_insert(n, current_page, t);
+}
+
+/*
+@prepare_tree
+This is helpful because the btree pages must start
+with a sentinel node(s?) representing the lowest
+value in the tree.
+*/
+tree* prepare_tree(){
+	tree* t = (tree*) malloc(sizeof(tree));
+	page* p = (page*) mallc(sizeof(page));
+	t->root = p;
+	node* n = (node*) malloc(sizeof(node));
+	node* n2 = (node*) malloc(sizeof(node));
+	n->val = NULL;
+	n2->val = NULL;
+	insert_into_page(p, n);
+	insert_into_page(p, n2);
+	return t;
 }
 
 /*
@@ -41,8 +57,6 @@ int _insert(node *n, page_node *p, tree *t){
 		return 1;
 	} else if(t->height) { // page is full, try a child
 
-		
-		
 	} else { // at leaf, must split
 		page_node* middle = split_page(p);
 		/*
