@@ -4,6 +4,21 @@
 #include "page.h"
 #include "btree.h"
 
+/*
+@prepare_tree
+This is helpful because the btree pages must start
+with a sentinel node representing the lowest
+value in the tree.
+*/
+tree* prepare_tree(tree *t){
+	// tree* t = (tree*) malloc(sizeof(tree));
+	page* p = (page*) mallc(sizeof(page));
+	t->root = p;
+	node* n = (node*) malloc(sizeof(node));
+	n->val = NULL;
+	insert_into_page(p, n);
+	return t;
+}
 
 /*
 @insert
@@ -20,30 +35,9 @@ For testing purposes, page size and max children are both 5
 */
 int insert(node *n, tree *t){
 	if(t->root == NULL){
-		page p;
-		t->root = &p;
+		prepare_tree(t);
 	}
-	page *current_page = t->root;
-	_insert(n, current_page, t);
-}
-
-/*
-@prepare_tree
-This is helpful because the btree pages must start
-with a sentinel node(s?) representing the lowest
-value in the tree.
-*/
-tree* prepare_tree(){
-	tree* t = (tree*) malloc(sizeof(tree));
-	page* p = (page*) mallc(sizeof(page));
-	t->root = p;
-	node* n = (node*) malloc(sizeof(node));
-	node* n2 = (node*) malloc(sizeof(node));
-	n->val = NULL;
-	n2->val = NULL;
-	insert_into_page(p, n);
-	insert_into_page(p, n2);
-	return t;
+	_insert(n, t->root, t);
 }
 
 /*
@@ -51,30 +45,17 @@ tree* prepare_tree(){
 Private-ish version of insert.
 */
 int _insert(node *n, page_node *p, tree *t){
-	int insert_successful = insert_node_into_page_sorted(p, n);
-
-	if(insert_successful){
-		return 1;
-	} else if(t->height) { // page is full, try a child
-
-	} else { // at leaf, must split
-		page_node* middle = split_page(p);
-		/*
-		insert new node into parent
-		check overflow
-		recurse if overflow
-		else return
-		*/
-	}
-
 	/*
-	if page is not full, call insert_node_into_page_sorted
-		-> that function automatically checks if page is full
-	if page is a leaf, split the page
-	if page is not a leaf, look for the first value greater than the new value
-		-> visit that node's children and repeat above steps
+	
+	*/
+}
 
-	i guess that means this is a recursive operation
+page_node* search_in_page(page* p, int val){
+	page_node *iter = p->head;
+	/*
+	look for value in this page
+	if the value is not found, look in child
+		-> visit the child of the first node which is larger than search value
 	*/
 }
 
