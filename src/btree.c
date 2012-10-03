@@ -17,14 +17,6 @@ tree* prepare_tree(tree *t){
 	node* n = (node*) malloc(sizeof(node));
 	n->val = NULL;
 
-	/*
-	while(i < max number of children){
-		make new page
-
-	}
-	*/
-
-
 	insert_into_page(p, n);
 	return t;
 }
@@ -79,12 +71,11 @@ so if you a find a value in the page that is like:
 // todo: Let's make this a binary search later!
 int search_and_insert(page* p, node *n){
 	page_node *iter = p->head;
+	// this pretty much happens in a new tree w/ an empty root
 	if(iter->next == NULL && iter->child == NULL){ // todo: does this need a leaf check?
 		// we only have a sentinel (representing smaller than all values)
 		insert_into_page(p, n);
-		return 0;
-	} else if(iter->child != NULL) {
-		iter = iter->child;
+		return 1;
 	}
 
 	while(iter != NULL){
@@ -102,6 +93,8 @@ int search_and_insert(page* p, node *n){
 					// perform recursive split operation
 				}
 			}
+		} else if(iter->n->val == n->val){
+			return 0; // btrees do not allow repeated values
 		} else {
 			iter = iter->next;
 		}
