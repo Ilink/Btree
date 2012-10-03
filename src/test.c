@@ -50,9 +50,12 @@ page* make_sorted_test_page(int *values){
 		printf("\n");
 	}
 
-	
-
 	printf("\nnumber of nodes inserted: %i\n", p->num_page_nodes);
-
 	return p;
+}
+
+tree* make_test_tree(int *values){
+	tree* t = (tree*) malloc(sizeof(tree));
+	t = prepare_tree(t);
+	
 }

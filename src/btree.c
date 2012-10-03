@@ -11,8 +11,7 @@ with a sentinel node representing the lowest
 value in the tree.
 */
 tree* prepare_tree(tree *t){
-	// tree* t = (tree*) malloc(sizeof(tree));
-	page* p = (page*) mallc(sizeof(page));
+	page* p = (page*) malloc(sizeof(page));
 	t->root = p;
 	node* n = (node*) malloc(sizeof(node));
 	n->val = NULL;
@@ -89,7 +88,8 @@ int search_and_insert(page* p, node *n){
 				// this is a bit less efficient because it iterates over the list instead of just re-arranging the pointers here
 				// todo: re-arrange pointers either by function or manually
 				insert_into_page(p, n);
-				if(page_is_full(page *p)){
+				// if(page_is_full(page *p)){
+				if(0){
 					// perform recursive split operation
 				}
 			}
