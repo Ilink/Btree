@@ -16,6 +16,15 @@ tree* prepare_tree(tree *t){
 	t->root = p;
 	node* n = (node*) malloc(sizeof(node));
 	n->val = NULL;
+
+	/*
+	while(i < max number of children){
+		make new page
+
+	}
+	*/
+
+
 	insert_into_page(p, n);
 	return t;
 }
@@ -50,13 +59,53 @@ int _insert(node *n, page_node *p, tree *t){
 	*/
 }
 
-page_node* search_in_page(page* p, int val){
+/*
+look for value in this page
+if the value is not found, look in child
+	-> visit the child of the first node which is larger than search value
+
+I think that a page without a child is a leaf. We're never going to make a
+new leaf level without performing split operations
+so if you a find a value in the page that is like:
+	3,4,6
+	insert 5
+	look for inbetween spot
+		(found between 4 and 6)
+	look at 4's children
+	if 4 has no children, value is not found
+	and we are close enough that we can insert at this page
+
+*/
+// todo: Let's make this a binary search later!
+int search_and_insert(page* p, node *n){
 	page_node *iter = p->head;
-	/*
-	look for value in this page
-	if the value is not found, look in child
-		-> visit the child of the first node which is larger than search value
-	*/
+	if(iter->next == NULL && iter->child == NULL){ // todo: does this need a leaf check?
+		// we only have a sentinel (representing smaller than all values)
+		insert_into_page(p, n);
+		return 0;
+	} else if(iter->child != NULL) {
+		iter = iter->child;
+	}
+
+	while(iter != NULL){
+		// Found spot for value: x < needle < y
+		if(n->val > iter->n->val && iter->next != NULL && n->val < iter->next){
+			if(iter->child != NULL){
+				iter = iter->child->head;
+				break;
+			} else {
+				// Insertion because the value was not found in tree
+				// this is a bit less efficient because it iterates over the list instead of just re-arranging the pointers here
+				// todo: re-arrange pointers either by function or manually
+				insert_into_page(p, n);
+				if(page_is_full(page *p)){
+					// perform recursive split operation
+				}
+			}
+		} else {
+			iter = iter->next;
+		}
+	}
 }
 
 /*
