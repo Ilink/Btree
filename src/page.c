@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-const int U = 5; // this size is temporary
+const int U = 3; // this size is temporary
 
 /*
 This is unused for now.
@@ -87,7 +87,6 @@ int insert_pnode_into_page_sorted(page *p, page_node *new_page_node){
 	// Only insert below maximum threshold
 	if((p->num_page_nodes + 1) <= U){
 		
-		// It is very simple to deal with empty/one-node lists
 		if(p->start == NULL && p->end == NULL){
 			printf("empty list\n");
 			p->start = new_page_node;
@@ -147,7 +146,7 @@ page_node* search_in_page(int val, page* p){
 	
 }
 
-int is_sentinel(page_node* pn){
+int only_sentinel(page_node* pn){
 	if(pn != NULL)
 		return pn->prev == NULL && pn->next == NULL;
 }

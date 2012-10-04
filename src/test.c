@@ -62,7 +62,7 @@ tree* make_test_tree(int *values){
 		node *n = (node*) malloc(sizeof(node));
 		n->val = *values;
 		n->ext = 1;
-		printf("%i\n",*values);
+		printf("inserting: %i\n",*values);
 		insert(n, t);
 	}
 }

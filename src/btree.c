@@ -14,16 +14,8 @@ tree* prepare_tree(tree *t){
 	page* p = (page*) malloc(sizeof(page));
 	t->root = p;
 	node* n = (node*) malloc(sizeof(node));
-	n->val = 555555;
-
-	// random val
-	node* n2 = (node*) malloc(sizeof(node));
-	n2->val = 123;
-
+	n->val = NULL;
 	insert_into_page(t->root, n);
-	insert_into_page(t->root, n2);
-
-	printf("sentinel: %i and next: %i\n", t->root->start->n->val, t->root->start->next->n->val);
 	return t;
 }
 
@@ -66,22 +58,20 @@ so if you a find a value in the page that is like:
 int search_and_insert(page* p, node *n){
 	page_node *iter = p->start;
 	// this pretty much happens in a new tree w/ an empty root
-	if(is_sentinel(iter)){ // todo: does this need a leaf check?
+	printf("nodes: %i\n", p->num_page_nodes);
+	if(only_sentinel(iter) || p->num_page_nodes == 0){ // todo: does this need a leaf check?
 		printf("Nothing but sentinel\n");
-		// we only have a sentinel (representing smaller than all values)
 		insert_into_page(p, n);
 		printf("val inserted into page: %i\n",n->val);
 		return 1;
 	}
-
-	// printf("comparing val(%i) with iter (%i) and iter, next(%i)\n", 
-	// 		n->val, iter->n->val, iter->next->n->val);
 
 	while(iter != NULL){
 		// Found spot for value: x < needle < y
 		// printf("comparing val(%i) with iter (%i) and iter, next(%i)\n", 
 		// 	n->val, iter->n->val, iter->next->n->val);
 		if(n->val > iter->n->val && iter->next != NULL && n->val < iter->next->n->val){
+			printf("found spot\n");
 			if(iter->child != NULL){
 				// Continue down the tree until we arrive at a leaf
 				printf("visiting the child");
@@ -95,7 +85,6 @@ int search_and_insert(page* p, node *n){
 				insert_into_page(p, n);
 				iter = iter->next;
 
-				// if(page_is_full(page *p)){
 				if(page_is_full(p)){
 					printf("page full\n");
 					// perform recursive split operation
@@ -103,11 +92,16 @@ int search_and_insert(page* p, node *n){
 					printf("page not full\n");
 				}
 			}
+		} else if(n->val > iter->n->val && iter->next == NULL){
+			printf("bigger than the others\n");
 		} else if(iter->n->val == n->val){
+			printf("repeat value\n");
 			return 0; // btrees do not allow repeated values
 		} else {
-			iter = iter->next;
+			printf("moving on to next\n");
 		}
+		iter = iter->next;
+		
 	}
 }
 
