@@ -6,7 +6,7 @@
 
 page* make_test_page(int *values){
 	page* p = (page*) malloc(sizeof(page));
-	p->head = NULL; p->tail = NULL; p->num_page_nodes = 0;
+	p->end = NULL; p->start = NULL; p->num_page_nodes = 0;
 
 	for(; *values != NULL; values++){
 		printf("making node with value: %i\n", *values);
@@ -17,7 +17,7 @@ page* make_test_page(int *values){
 		insert_into_page(p, n);
 	}
 
-	page_node* iter = p->tail;
+	page_node* iter = p->start;
 	do {
 		node* n = iter->n->val;
 		printf("val: %i", iter->n->val);
@@ -31,7 +31,7 @@ page* make_test_page(int *values){
 
 page* make_sorted_test_page(int *values){
 	page* p = (page*) malloc(sizeof(page));
-	p->head = NULL; p->tail = NULL; p->num_page_nodes = 0;
+	p->end = NULL; p->start = NULL; p->num_page_nodes = 0;
 
 	for(; *values != NULL; values++){
 		// printf("making node with value: %i\n", *values);
@@ -40,7 +40,7 @@ page* make_sorted_test_page(int *values){
 		n->val = *values;
 		n->ext = 1;
 		insert_node_into_page_sorted(p, n);
-		page_node* iter = p->tail;
+		page_node* iter = p->start;
 		printf("current list: \t");
 		do {
 			node* n = iter->n->val;

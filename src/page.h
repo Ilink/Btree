@@ -26,8 +26,8 @@ typedef struct {
 } split;
 
 struct page {
-	page_node *head;
-	page_node *tail;
+	page_node *end;
+	page_node *start;
 	page_node *parent;
 	int num_page_nodes;
 };

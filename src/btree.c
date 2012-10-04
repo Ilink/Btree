@@ -23,7 +23,7 @@ tree* prepare_tree(tree *t){
 	insert_into_page(t->root, n);
 	insert_into_page(t->root, n2);
 
-	printf("sentinel: %i and next: %i\n", t->root->tail->n->val, t->root->tail->next->n->val);
+	printf("sentinel: %i and next: %i\n", t->root->start->n->val, t->root->start->next->n->val);
 	return t;
 }
 
@@ -64,7 +64,7 @@ so if you a find a value in the page that is like:
 */
 // todo: Let's make this a binary search later!
 int search_and_insert(page* p, node *n){
-	page_node *iter = p->tail;
+	page_node *iter = p->start;
 	// this pretty much happens in a new tree w/ an empty root
 	if(is_sentinel(iter)){ // todo: does this need a leaf check?
 		printf("Nothing but sentinel\n");
@@ -85,7 +85,7 @@ int search_and_insert(page* p, node *n){
 			if(iter->child != NULL){
 				// Continue down the tree until we arrive at a leaf
 				printf("visiting the child");
-				iter = iter->child->head;
+				iter = iter->child->end;
 			} else {
 				// Insertion into a leaf
 				// Only a leaf will have no children

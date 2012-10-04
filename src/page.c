@@ -26,25 +26,25 @@ int insert_into_page(page *p, node *n){
 	new_page_node->n = n;
 	new_page_node->next = NULL;
 	new_page_node->prev = NULL;
-	page_node *tail_temp = p->tail;
+	page_node *start_temp = p->start;
 
 	// Only insert below maximum threshold +1
 	// +1 because it should be allowed to overflow before being split
 	if((p->num_page_nodes + 1) <= U){
-		if(p->tail == NULL && p->head == NULL){
+		if(p->start == NULL && p->end == NULL){
 			printf("empty list\n");
-			p->tail = new_page_node;
-		} else if(p->head == NULL){
-			printf("no head\n");
-			p->tail->next = new_page_node;
-			p->head = new_page_node;
-			new_page_node->prev = p->tail;
+			p->start = new_page_node;
+		} else if(p->end == NULL){
+			printf("no end\n");
+			p->start->next = new_page_node;
+			p->end = new_page_node;
+			new_page_node->prev = p->start;
 		} else {
-			printf("list has head and tail\n");
-			p->head->next = new_page_node;
+			printf("list has end and start\n");
+			p->end->next = new_page_node;
 			new_page_node->next = NULL;
-			new_page_node->prev = p->head;
-			p->head = new_page_node;
+			new_page_node->prev = p->end;
+			p->end = new_page_node;
 		}
 		
 		p->num_page_nodes++;
@@ -77,7 +77,7 @@ int insert_node_into_page_sorted(page *p, node *n){
 	new_page_node->n = n;
 	new_page_node->next = NULL;
 	new_page_node->prev = NULL;
-	page_node *tail_temp = p->tail;
+	page_node *start_temp = p->start;
 
 	int insert_successful = insert_pnode_into_page_sorted(p, new_page_node);
 	return insert_successful;
@@ -88,24 +88,24 @@ int insert_pnode_into_page_sorted(page *p, page_node *new_page_node){
 	if((p->num_page_nodes + 1) <= U){
 		
 		// It is very simple to deal with empty/one-node lists
-		if(p->tail == NULL && p->head == NULL){
+		if(p->start == NULL && p->end == NULL){
 			printf("empty list\n");
-			p->tail = new_page_node;
-		} else if(p->head == NULL){
-			printf("no head\n");
-			if(p->tail->n->val < new_page_node->n->val){
-				printf("tail < val");
-				p->head = new_page_node;
-			} else { // swap head and tail
-				printf("val < tail: val is new tail!");
-				p->head = p->tail;
-				p->tail = new_page_node;
+			p->start = new_page_node;
+		} else if(p->end == NULL){
+			printf("no end\n");
+			if(p->start->n->val < new_page_node->n->val){
+				printf("start < val");
+				p->end = new_page_node;
+			} else { // swap end and start
+				printf("val < start: val is new start!");
+				p->end = p->start;
+				p->start = new_page_node;
 			}
-			p->tail->next = p->head;
-			p->head->prev = p->tail;
-		} else { // insert in order; head and tail are all setup
+			p->start->next = p->end;
+			p->end->prev = p->start;
+		} else { // insert in order; end and start are all setup
 			// todo: is this the most efficient way? could i use binary search?	
-			page_node *iter = p->tail;
+			page_node *iter = p->start;
 			for(int i = 0; iter != NULL; i++) {
 				printf("iter (%i) val: %i\n", i, iter->n->val);
 				if(new_page_node->n->val < iter->n->val){
@@ -113,7 +113,7 @@ int insert_pnode_into_page_sorted(page *p, page_node *new_page_node){
 						printf("insertng at start\n");
 						iter->prev = new_page_node;
 						new_page_node->next = iter;
-						p->tail = new_page_node;
+						p->start = new_page_node;
 					} else { // we're in the middle-ish
 						printf("inserting in middle-ish\n");
 						iter->prev->next = new_page_node;
@@ -129,10 +129,10 @@ int insert_pnode_into_page_sorted(page *p, page_node *new_page_node){
 			// Therefore, we must insert after the last node
 			if(iter == NULL){
 				printf("inserting at end\n");
-				p->head->next = new_page_node;
+				p->end->next = new_page_node;
 				new_page_node->next = NULL;
-				new_page_node->prev = p->head;
-				p->head = new_page_node;
+				new_page_node->prev = p->end;
+				p->end = new_page_node;
 			}
 		}
 		p->num_page_nodes++;
@@ -167,7 +167,7 @@ search approach. But i will worry about that later.
 Assumes the list (the page) is in sorted order.
 */
 page_node* search_page_ceil(int val, page* p){
-	page_node *iter = p->head;
+	page_node *iter = p->end;
 	while(iter != NULL){
 		if(iter->n->val > val){
 			return iter;
@@ -190,7 +190,7 @@ existing page. This is just the way b-trees are constructed.
 page_node* split_page(page* p){
 	page *split_page = (page*) malloc(sizeof(page));
 	int center = ceil(p->num_page_nodes / 2);
-	page_node *iter = p->tail;
+	page_node *iter = p->start;
 	page_node *center_node;
 	for(int i = 0; iter != NULL; i++){
 		if(i == center){
@@ -199,18 +199,18 @@ page_node* split_page(page* p){
 			// theoretically, the list could be small enough that this causes
 			// a segfault...fix
 			iter = iter->next;
-			printf("new tail: %i\n", iter->n->val);
+			printf("new start: %i\n", iter->n->val);
 
 			// since the b-tree has these in sorted order
 			// we just need to break off part of it
-			split_page->tail = iter;
-			split_page->head = p->head;
+			split_page->start = iter;
+			split_page->end = p->end;
 
 			/*
 			set the child properly
 			*/
 
-			p->head = center_node->prev;
+			p->end = center_node->prev;
 			center_node->prev->next = NULL;
 			center_node->prev = NULL;
 
