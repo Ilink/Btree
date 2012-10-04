@@ -58,4 +58,11 @@ tree* make_test_tree(int *values){
 	tree* t = (tree*) malloc(sizeof(tree));
 	t = prepare_tree(t);
 	
+	for(; *values != NULL; values++){
+		node *n = (node*) malloc(sizeof(node));
+		n->val = *values;
+		n->ext = 1;
+		printf("%i\n",*values);
+		insert(n, t);
+	}
 }

@@ -40,5 +40,7 @@ int remove_page_node(page_node *n);
 bool is_full(page *p);
 int insert_node_into_page_sorted(page *p, node *n);
 page_node* split_page(page* p);
+int page_is_full(page *p);
+int is_sentinel(page_node* pn);
 
 #endif

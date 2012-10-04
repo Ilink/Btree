@@ -147,6 +147,11 @@ page_node* search_in_page(int val, page* p){
 	
 }
 
+int is_sentinel(page_node* pn){
+	if(pn != NULL)
+		return pn->prev == NULL && pn->next == NULL;
+}
+
 /*
 Find page with smallest larger value
 EG:
@@ -227,4 +232,8 @@ int remove_page_node(page_node *n){
 	next->prev = prev;
 
 	// Free could go here
+}
+
+int page_is_full(page *p){
+	return p->num_page_nodes > U;
 }

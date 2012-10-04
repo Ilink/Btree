@@ -16,7 +16,14 @@ tree* prepare_tree(tree *t){
 	node* n = (node*) malloc(sizeof(node));
 	n->val = NULL;
 
-	insert_into_page(p, n);
+	// random val
+	node* n2 = (node*) malloc(sizeof(node));
+	n2->val = 123;
+
+	insert_into_page(t->root, n);
+	insert_into_page(t->root, n2);
+
+	printf("sentinel: %i and next: %i\n", t->root->head, t->root->tail->n->val);
 	return t;
 }
 
@@ -28,26 +35,14 @@ Returns true or false on success/failure (respectively)
 The function will iterate over the tree (from the root) until it
 finds an appropriate page to put the node
 
-This is the public version which mostly just finds a home for the node
-The 'private' version actually does the inserting/searching/splitting/hard work.
-
 For testing purposes, page size and max children are both 5
 */
 int insert(node *n, tree *t){
 	if(t->root == NULL){
 		prepare_tree(t);
 	}
-	_insert(n, t->root, t);
-}
-
-/*
-@_insert
-Private-ish version of insert.
-*/
-int _insert(node *n, page_node *p, tree *t){
-	/*
-	
-	*/
+	search_and_insert(t->root, n);
+	// _insert(n, t->root, t);
 }
 
 /*
@@ -71,26 +66,41 @@ so if you a find a value in the page that is like:
 int search_and_insert(page* p, node *n){
 	page_node *iter = p->head;
 	// this pretty much happens in a new tree w/ an empty root
-	if(iter->next == NULL && iter->child == NULL){ // todo: does this need a leaf check?
+	if(is_sentinel(iter)){ // todo: does this need a leaf check?
+		printf("Nothing but sentinel\n");
 		// we only have a sentinel (representing smaller than all values)
 		insert_into_page(p, n);
+		printf("val inserted into page: %i\n",n->val);
 		return 1;
 	}
 
+	// printf("comparing val(%i) with iter (%i) and iter, next(%i)\n", 
+	// 		n->val, iter->n->val, iter->next->n->val);
+
 	while(iter != NULL){
 		// Found spot for value: x < needle < y
-		if(n->val > iter->n->val && iter->next != NULL && n->val < iter->next){
+		// printf("comparing val(%i) with iter (%i) and iter, next(%i)\n", 
+		// 	n->val, iter->n->val, iter->next->n->val);
+		if(n->val > iter->n->val && iter->next != NULL && n->val < iter->next->n->val){
 			if(iter->child != NULL){
+				// Continue down the tree until we arrive at a leaf
+				printf("visiting the child");
 				iter = iter->child->head;
-				break;
 			} else {
-				// Insertion because the value was not found in tree
+				// Insertion into a leaf
+				// Only a leaf will have no children
+
 				// this is a bit less efficient because it iterates over the list instead of just re-arranging the pointers here
 				// todo: re-arrange pointers either by function or manually
 				insert_into_page(p, n);
+				iter = iter->next;
+
 				// if(page_is_full(page *p)){
-				if(0){
+				if(page_is_full(p)){
+					printf("page full\n");
 					// perform recursive split operation
+				} else {
+					printf("page not full\n");
 				}
 			}
 		} else if(iter->n->val == n->val){
