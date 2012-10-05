@@ -28,36 +28,23 @@ int insert_into_page(page *p, node *n){
 	new_page_node->prev = NULL;
 	page_node *start_temp = p->start;
 
-	// Only insert below maximum threshold +1
-	// +1 because it should be allowed to overflow before being split
-	if((p->num_page_nodes + 1) <= U){
-		if(p->start == NULL && p->end == NULL){
-			printf("empty list\n");
-			p->start = new_page_node;
-		} else if(p->end == NULL){
-			printf("no end\n");
-			p->start->next = new_page_node;
-			p->end = new_page_node;
-			new_page_node->prev = p->start;
-		} else {
-			printf("list has end and start\n");
-			p->end->next = new_page_node;
-			new_page_node->next = NULL;
-			new_page_node->prev = p->end;
-			p->end = new_page_node;
-		}
-		
-		p->num_page_nodes++;
-		return 1;
+	if(p->start == NULL && p->end == NULL){
+		printf("empty list\n");
+		p->start = new_page_node;
+	} else if(p->end == NULL){
+		printf("no end\n");
+		p->start->next = new_page_node;
+		p->end = new_page_node;
+		new_page_node->prev = p->start;
+	} else {
+		printf("list has end and start\n");
+		p->end->next = new_page_node;
+		new_page_node->next = NULL;
+		new_page_node->prev = p->end;
+		p->end = new_page_node;
 	}
-
-	// Allows detection of overflow
-	// Tree may decide to split the page if it overflows
-
-	// i sense an off-by-one error...
-	if(p->num_page_nodes == U) {
-		return 0;
-	}
+	
+	p->num_page_nodes++;
 	return 1;
 }
 
@@ -84,56 +71,53 @@ int insert_node_into_page_sorted(page *p, node *n){
 }
 
 int insert_pnode_into_page_sorted(page *p, page_node *new_page_node){
-	// Only insert below maximum threshold
-	if((p->num_page_nodes + 1) <= U){
-		
-		if(p->start == NULL && p->end == NULL){
-			printf("empty list\n");
+	if(p->start == NULL && p->end == NULL){
+		printf("empty list\n");
+		p->start = new_page_node;
+	} else if(p->end == NULL){
+		printf("no end\n");
+		if(p->start->n->val < new_page_node->n->val){
+			printf("start < val");
+			p->end = new_page_node;
+		} else { // swap end and start
+			printf("val < start: val is new start!");
+			p->end = p->start;
 			p->start = new_page_node;
-		} else if(p->end == NULL){
-			printf("no end\n");
-			if(p->start->n->val < new_page_node->n->val){
-				printf("start < val");
-				p->end = new_page_node;
-			} else { // swap end and start
-				printf("val < start: val is new start!");
-				p->end = p->start;
-				p->start = new_page_node;
-			}
-			p->start->next = p->end;
-			p->end->prev = p->start;
-		} else { // insert in order; end and start are all setup
-			// todo: is this the most efficient way? could i use binary search?	
-			page_node *iter = p->start;
-			for(int i = 0; iter != NULL; i++) {
-				printf("iter (%i) val: %i\n", i, iter->n->val);
-				if(new_page_node->n->val < iter->n->val){
-					if(iter->prev == NULL){ // we're at the start
-						printf("insertng at start\n");
-						iter->prev = new_page_node;
-						new_page_node->next = iter;
-						p->start = new_page_node;
-					} else { // we're in the middle-ish
-						printf("inserting in middle-ish\n");
-						iter->prev->next = new_page_node;
-						new_page_node->prev = iter->prev;
-						new_page_node->next = iter;
-						iter->prev = new_page_node;
-					}
-					break;
-				}
-				iter = iter->next;
-			}
-			// The value is larger than all the values in the list
-			// Therefore, we must insert after the last node
-			if(iter == NULL){
-				printf("inserting at end\n");
-				p->end->next = new_page_node;
-				new_page_node->next = NULL;
-				new_page_node->prev = p->end;
-				p->end = new_page_node;
-			}
 		}
+		p->start->next = p->end;
+		p->end->prev = p->start;
+	} else { // insert in order; end and start are all setup
+		// todo: is this the most efficient way? could i use binary search?	
+		page_node *iter = p->start;
+		for(int i = 0; iter != NULL; i++) {
+			// printf("iter (%i) val: %i\n", i, iter->n->val);
+			if(new_page_node->n->val < iter->n->val){
+				if(iter->prev == NULL){ // we're at the start
+					printf("insertng at start\n");
+					iter->prev = new_page_node;
+					new_page_node->next = iter;
+					p->start = new_page_node;
+				} else { // we're in the middle-ish
+					printf("inserting in middle-ish\n");
+					iter->prev->next = new_page_node;
+					new_page_node->prev = iter->prev;
+					new_page_node->next = iter;
+					iter->prev = new_page_node;
+				}
+				break;
+			}
+			iter = iter->next;
+		}
+		// The value is larger than all the values in the list
+		// Therefore, we must insert after the last node
+		if(iter == NULL){
+			printf("inserting at end\n");
+			p->end->next = new_page_node;
+			new_page_node->next = NULL;
+			new_page_node->prev = p->end;
+			p->end = new_page_node;
+		}
+		
 		p->num_page_nodes++;
 		return 1;
 	}

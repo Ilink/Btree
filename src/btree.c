@@ -82,7 +82,7 @@ int search_and_insert(page* p, node *n){
 
 				// this is a bit less efficient because it iterates over the list instead of just re-arranging the pointers here
 				// todo: re-arrange pointers either by function or manually
-				insert_into_page(p, n);
+				insert_node_into_page_sorted(p, n);
 				iter = iter->next;
 
 				if(page_is_full(p)){
@@ -93,7 +93,14 @@ int search_and_insert(page* p, node *n){
 				}
 			}
 		} else if(n->val > iter->n->val && iter->next == NULL){
+			// Value can fit in the list, but only at the end
 			printf("bigger than the others\n");
+			int success = insert_node_into_page_sorted(p, n);
+			printf("insert successful? %i", success);
+			printf("num: %i\n", p->num_page_nodes );
+			if(page_is_full(p)){
+				printf("page full\n");
+			}
 		} else if(iter->n->val == n->val){
 			printf("repeat value\n");
 			return 0; // btrees do not allow repeated values
@@ -103,6 +110,10 @@ int search_and_insert(page* p, node *n){
 		iter = iter->next;
 		
 	}
+}
+
+int greater_than_last(){
+
 }
 
 /*
