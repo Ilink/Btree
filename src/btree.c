@@ -130,8 +130,18 @@ int recursive_split(tree *t, page *p){
 	if(p->parent == NULL){
 		page *new_root = (page*) malloc(sizeof(page));
 		page_node *middle = split_page(p);
-		p->root = new_root;
+		t->root = new_root;
+
+		/*
+			middle node inserted into new root
+			set the remaining former page as the sentinel's child
+		*/
+		insert_sentinel_child(new_root, p);
 	}
+}
+
+void insert_sentinel_child(page *p, page *child){
+	p->first->child = child;
 }
 
 /*
