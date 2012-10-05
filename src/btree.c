@@ -116,6 +116,24 @@ int greater_than_last(){
 
 }
 
+page_node make_new_root(tree *t, page *p){
+
+}
+
+int recursive_split(tree *t, page *p){
+	/*
+	page is root (if parent is null)
+		=> split and make new root
+	page isn't root (has parent)
+		=> split and check if parent has overflowed
+	*/
+	if(p->parent == NULL){
+		page *new_root = (page*) malloc(sizeof(page));
+		page_node *middle = split_page(p);
+		p->root = new_root;
+	}
+}
+
 /*
 @find
 Finds a node within the tree, starting at the root
