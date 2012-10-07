@@ -49,6 +49,36 @@ int insert_into_page(page *p, node *n){
 }
 
 /*
+@insert_pn_into_page
+Inserts a page node into the page. Unsorted.
+Returns true / false
+*/
+int insert_pn_into_page(page *p, page_node *pn){
+	pn->next = NULL;
+	pn->prev = NULL;
+	page_node *start_temp = p->start;
+
+	if(p->start == NULL && p->end == NULL){
+		printf("empty list\n");
+		p->start = pn;
+	} else if(p->end == NULL){
+		printf("no end\n");
+		p->start->next = pn;
+		p->end = pn;
+		pn->prev = p->start;
+	} else {
+		printf("list has end and start\n");
+		p->end->next = pn;
+		pn->next = NULL;
+		pn->prev = p->end;
+		p->end = pn;
+	}
+	
+	p->num_page_nodes++;
+	return 1;
+}
+
+/*
 @insert_node_into_page_sorted
 Inserts a node into a page, maintaining ascending order
 All b-tree nodes are arranged this way.
@@ -171,7 +201,8 @@ The page_node is generally inserted into another,
 existing page. This is just the way b-trees are constructed.
 */
 page_node* split_page(page* p){
-	page *split_page = (page*) malloc(sizeof(page));
+	// page *split = (page*) malloc(sizeof(page));
+	page *split = make_page();
 	int center = ceil(p->num_page_nodes / 2);
 	page_node *iter = p->start;
 	page_node *center_node;
@@ -186,8 +217,8 @@ page_node* split_page(page* p){
 
 			// since the b-tree has these in sorted order
 			// we just need to break off part of it
-			split_page->start = iter;
-			split_page->end = p->end;
+			split->start = iter;
+			split->end = p->end;
 
 			/*
 			set the child properly
@@ -197,8 +228,8 @@ page_node* split_page(page* p){
 			center_node->prev->next = NULL;
 			center_node->prev = NULL;
 
-			center_node->child = split_page;
-			split_page->parent = center_node;
+			center_node->child = split;
+			split->parent = center_node;
 
 			break;
 		}
@@ -219,4 +250,14 @@ int remove_page_node(page_node *n){
 
 int page_is_full(page *p){
 	return p->num_page_nodes > U;
+}
+
+// Returns an empty page
+// This is so we never forget to add the sentinel node
+page* make_page(){
+	page* p = (page*) malloc(sizeof(page));
+	node *n = (node*) malloc(sizeof(node));
+	n->val = NULL;
+	insert_into_page(p, n);
+	return p;
 }

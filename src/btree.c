@@ -11,7 +11,8 @@ with a sentinel node representing the lowest
 value in the tree.
 */
 tree* prepare_tree(tree *t){
-	page* p = (page*) malloc(sizeof(page));
+	// page* p = (page*) malloc(sizeof(page));
+	page* p = make_page();
 	t->root = p;
 	node* n = (node*) malloc(sizeof(node));
 	n->val = NULL;
@@ -33,7 +34,7 @@ int insert(node *n, tree *t){
 	if(t->root == NULL){
 		prepare_tree(t);
 	}
-	search_and_insert(t->root, n);
+	search_and_insert(t, t->root, n);
 	// _insert(n, t->root, t);
 }
 
@@ -55,7 +56,7 @@ so if you a find a value in the page that is like:
 
 */
 // todo: Let's make this a binary search later!
-int search_and_insert(page* p, node *n){
+int search_and_insert(tree *t, page* p, node *n){
 	page_node *iter = p->start;
 	// this pretty much happens in a new tree w/ an empty root
 	printf("nodes: %i\n", p->num_page_nodes);
@@ -87,6 +88,7 @@ int search_and_insert(page* p, node *n){
 
 				if(page_is_full(p)){
 					printf("page full\n");
+					recursive_split(t, p, 3);
 					// perform recursive split operation
 				} else {
 					printf("page not full\n");
@@ -112,36 +114,74 @@ int search_and_insert(page* p, node *n){
 	}
 }
 
-int greater_than_last(){
-
+int is_overflow(page *p, int max_size){
+	return p->num_page_nodes > max_size;
 }
 
-page_node make_new_root(tree *t, page *p){
-
-}
-
-int recursive_split(tree *t, page *p){
-	/*
-	page is root (if parent is null)
-		=> split and make new root
-	page isn't root (has parent)
-		=> split and check if parent has overflowed
-	*/
-	if(p->parent == NULL){
-		page *new_root = (page*) malloc(sizeof(page));
-		page_node *middle = split_page(p);
-		t->root = new_root;
-
-		/*
-			middle node inserted into new root
-			set the remaining former page as the sentinel's child
-		*/
-		insert_sentinel_child(new_root, p);
-	}
-}
-
+/*
+@insert_sentinel_child
+Should probably go within page.c
+I suppose be careful here, since it overwrites the 
+current child
+*/
 void insert_sentinel_child(page *p, page *child){
-	p->first->child = child;
+	p->start->child = child;
+}
+
+
+/*
+Let's make this the only place where we decide
+whether or not to split the page based upon max size.
+
+@recursive_split
+Begins at a specific page and splits the page.
+Takes the middle node from the split result and adds
+it to the parent page.
+If the parent overflows, the operation continues recursively.
+If the root must be split, a new root node is created.
+The sentinel node within the new root points to the orphan nodes.
+The next slot belongs to the middle split result.
+
+[*][Middle]
+ |	     \
+[1,2,3]  [4,5,6]
+*/
+int recursive_split(tree *t, page *p, int max_size){
+	if(p->num_page_nodes > max_size){
+		printf("starting split\n");
+		page_node *middle;
+		/*
+		page is root (if parent is null)
+			=> split and make new root
+		page isn't root (has parent)
+			=> split and check if parent has overflowed
+		*/
+
+		middle = split_page(p);
+		// check if parent has or will overflow
+
+		// We are at the root
+		if(p->parent == NULL){
+			printf("splitting the root\n");
+			// page *new_root = (page*) malloc(sizeof(page));
+			page *new_root = make_page();
+
+			t->root = new_root;
+			/*
+				middle node inserted into new root
+				set the remaining former page as the sentinel's child
+			*/
+			insert_sentinel_child(new_root, p);
+			insert_pn_into_page(new_root, middle);
+		} else { // at a leaf
+			printf("splitting a leaf\n");
+			insert_pnode_into_page_sorted(p->parent, middle);
+			recursive_split(t, p->parent, max_size);
+		}
+		printf("done splitting\n");
+	} else {
+		printf("done splitting\n");
+	}
 }
 
 /*

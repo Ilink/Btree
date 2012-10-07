@@ -42,5 +42,6 @@ int insert_node_into_page_sorted(page *p, node *n);
 page_node* split_page(page* p);
 int page_is_full(page *p);
 int only_sentinel(page_node* pn);
+page* make_page();
 
 #endif
