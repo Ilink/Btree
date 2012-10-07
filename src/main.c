@@ -16,7 +16,8 @@ int main(int argc, char **argv){
 	int test_vals_unsorted[] = {4,3,1,9,6, NULL};
 	// p = make_sorted_test_page(test_vals_unsorted);
 
-	make_test_tree(test_vals_unsorted);
+	tree *t = make_test_tree(test_vals_unsorted);
+	// print_tree(t);
 	
 	// test_split_page(p);
 }

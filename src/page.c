@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-const int U = 3; // this size is temporary
+const int U = 4; // this size is temporary
 
 /*
 This is unused for now.
@@ -151,8 +151,7 @@ int insert_pnode_into_page_sorted(page *p, page_node *new_page_node){
 		p->num_page_nodes++;
 		return 1;
 	}
-	// Allows detection of overflow
-	// Tree may decide to split the page if it overflows
+
 	return 0;
 }
 
@@ -160,9 +159,10 @@ page_node* search_in_page(int val, page* p){
 	
 }
 
-int only_sentinel(page_node* pn){
-	if(pn != NULL)
-		return pn->prev == NULL && pn->next == NULL;
+int only_sentinel(page* p){
+	if(p != NULL)
+		return p->start->next == NULL;
+	else return 0;
 }
 
 /*
@@ -256,6 +256,7 @@ int page_is_full(page *p){
 // This is so we never forget to add the sentinel node
 page* make_page(){
 	page* p = (page*) malloc(sizeof(page));
+	p->end = NULL; p->start = NULL; p->num_page_nodes = 0;
 	node *n = (node*) malloc(sizeof(node));
 	n->val = NULL;
 	insert_into_page(p, n);

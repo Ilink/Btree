@@ -30,7 +30,8 @@ page* make_test_page(int *values){
 }
 
 page* make_sorted_test_page(int *values){
-	page* p = (page*) malloc(sizeof(page));
+	// page* p = (page*) malloc(sizeof(page));
+	page *p = make_page();
 	p->end = NULL; p->start = NULL; p->num_page_nodes = 0;
 
 	for(; *values != NULL; values++){
@@ -65,4 +66,5 @@ tree* make_test_tree(int *values){
 		printf("inserting: %i\n",*values);
 		insert(n, t);
 	}
+	return t;
 }

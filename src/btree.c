@@ -13,10 +13,12 @@ value in the tree.
 tree* prepare_tree(tree *t){
 	// page* p = (page*) malloc(sizeof(page));
 	page* p = make_page();
+	printf("making page: \n");
+	print_page(p);
 	t->root = p;
-	node* n = (node*) malloc(sizeof(node));
-	n->val = NULL;
-	insert_into_page(t->root, n);
+	// node* n = (node*) malloc(sizeof(node));
+	// n->val = NULL;
+	// insert_into_page(t->root, n);
 	return t;
 }
 
@@ -35,7 +37,6 @@ int insert(node *n, tree *t){
 		prepare_tree(t);
 	}
 	search_and_insert(t, t->root, n);
-	// _insert(n, t->root, t);
 }
 
 /*
@@ -58,12 +59,12 @@ so if you a find a value in the page that is like:
 // todo: Let's make this a binary search later!
 int search_and_insert(tree *t, page* p, node *n){
 	page_node *iter = p->start;
+
 	// this pretty much happens in a new tree w/ an empty root
-	printf("nodes: %i\n", p->num_page_nodes);
-	if(only_sentinel(iter) || p->num_page_nodes == 0){ // todo: does this need a leaf check?
+	if(only_sentinel(p) || p->num_page_nodes == 1){ // broken, this isnt ever firing
 		printf("Nothing but sentinel\n");
 		insert_into_page(p, n);
-		printf("val inserted into page: %i\n",n->val);
+		print_page(p);
 		return 1;
 	}
 
@@ -83,12 +84,14 @@ int search_and_insert(tree *t, page* p, node *n){
 
 				// this is a bit less efficient because it iterates over the list instead of just re-arranging the pointers here
 				// todo: re-arrange pointers either by function or manually
+				printf("inserting at leaf\n");
 				insert_node_into_page_sorted(p, n);
+				print_page(p);
 				iter = iter->next;
 
 				if(page_is_full(p)){
 					printf("page full\n");
-					recursive_split(t, p, 3);
+					// recursive_split(t, p, 3);
 					// perform recursive split operation
 				} else {
 					printf("page not full\n");
@@ -98,19 +101,18 @@ int search_and_insert(tree *t, page* p, node *n){
 			// Value can fit in the list, but only at the end
 			printf("bigger than the others\n");
 			int success = insert_node_into_page_sorted(p, n);
-			printf("insert successful? %i", success);
-			printf("num: %i\n", p->num_page_nodes );
+			print_page(p);
 			if(page_is_full(p)){
 				printf("page full\n");
 			}
 		} else if(iter->n->val == n->val){
-			printf("repeat value\n");
+			printf("repeat value: %i and %i\n", iter->n->val, n->val);
 			return 0; // btrees do not allow repeated values
 		} else {
-			printf("moving on to next\n");
+			// printf("moving on to next\n");
 		}
-		iter = iter->next;
 		
+		iter = iter->next;
 	}
 }
 
@@ -202,4 +204,48 @@ Private version of find. Suitable for recursive operations.
 */
 node* _find(page_node *p, int needle){
 
+}
+
+void print_tree(tree* t){
+	page_node *iter = t->root->start->next; // skip the sentinel
+
+	printf("\nRoot: [");
+	while(iter != NULL){
+		printf("%i,", iter->n->val);
+		iter = iter->next;
+	}
+	printf("]");
+
+	iter = t->root->start->child->start->next;
+
+	printf("\nSent child: [");
+	while(iter != NULL){
+		printf("%i,", iter->n->val);
+		iter = iter->next;
+	}
+	printf("]");
+
+	iter = t->root->start->next->child->start->next;
+	printf("\nFirst child: [");
+	while(iter != NULL){
+		printf("%i,", iter->n->val);
+		iter = iter->next;
+	}
+	printf("]");
+
+}
+
+void _print_tree(tree *t, page *p){
+
+}
+
+void print_page(page* p){
+	page_node *iter = p->start;
+	printf("number of nodes: %i\n", p->num_page_nodes);
+	printf("\n[");
+	while(iter != NULL){
+		printf("%i,", iter->n->val);
+		iter = iter->next;
+	}
+	printf("]");
 }
