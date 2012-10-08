@@ -207,7 +207,7 @@ existing page. This is just the way b-trees are constructed.
 */
 page_node* split_page(page* p){
 	// page *split = (page*) malloc(sizeof(page));
-	printf("--------splitting page-----\n");
+	printf("\n--------splitting page-----\n\n");
 	page *split = make_page();
 	int center = ceil(p->num_page_nodes / 2);
 	page_node *iter = p->start;
@@ -236,8 +236,11 @@ page_node* split_page(page* p){
 		iter = iter->next;
 	}
 	printf("center: %i\n", center_node->n->val);
-	printf("new start: %i\n", iter->n->val);
-	printf("-----------------------\n");
+	printf("child of split: ");
+	print_page(center_node->child);
+	printf("left page: ");
+	print_page(p);
+	printf("\n-----------------------\n");
 	return center_node;
 }
 

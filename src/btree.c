@@ -71,9 +71,10 @@ int search_and_insert(tree *t, page* p, node *n){
 
 	while(iter != NULL){
 		// Found spot for value: x < needle < y
-		// printf("comparing val(%i) with iter (%i) and iter, next(%i)\n", 
-		// 	n->val, iter->n->val, iter->next->n->val);
-		if(n->val > iter->n->val && iter->next != NULL && n->val < iter->next->n->val){
+		// if(n->val > iter->n->val && iter->next != NULL && n->val < iter->next->n->val){
+		if((iter->next != NULL && n->val < iter->next->n->val)
+			|| (n->val > iter->n->val && iter->next == NULL)){
+
 			printf("found spot\n");
 			if(iter->child != NULL){
 				// Continue down the tree until we arrive at a leaf
@@ -93,10 +94,14 @@ int search_and_insert(tree *t, page* p, node *n){
 				if(page_is_full(p)){
 					printf("page full\n");
 					recursive_split(t, p, U);
-				} else {
-					printf("page not full\n");
+					print_tree_bfs(t);
 				}
 			}
+
+		/*
+		this part is wrong for the sake of balance
+		i dont know if this statement is even neccesary
+		*/
 		} else if(n->val > iter->n->val && iter->next == NULL){
 			// Value can fit in the list, but only at the end
 			printf("bigger than the others\n");
@@ -105,12 +110,8 @@ int search_and_insert(tree *t, page* p, node *n){
 			if(page_is_full(p)){
 				printf("page full\n");
 				recursive_split(t, p, U);
+				print_tree_bfs(t);
 			}
-		} else if(iter->n->val == n->val){
-			printf("repeat value: %i and %i\n", iter->n->val, n->val);
-			return 0; // btrees do not allow repeated values
-		} else {
-			// printf("moving on to next\n");
 		}
 		
 		iter = iter->next;
@@ -161,8 +162,6 @@ int recursive_split(tree *t, page *p, int max_size){
 		*/
 
 		middle = split_page(p);
-		printf("child of split: ");
-		print_page(middle->child);
 		// check if parent has or will overflow
 
 		// We are at the root
