@@ -54,9 +54,9 @@ int insert(node *n, tree *t){
 }
 
 int belongs_on_sent(int val, page* p){
-	printf("test\n");
+	// printf("%i < %i ?\n", val, p->start->next);
 	if(p->start != NULL){
-		return val < p->start->next;
+		return val < p->start->next->n->val;
 	} 
 	return 0;
 }
@@ -90,8 +90,9 @@ int search_and_insert(tree *t, page* p, node *n){
 		return 1;
 	}
 
-	if(n->val < p->start->next){ // value belongs on sent
-		printf("goes on sent\n");
+	if(belongs_on_sent(n->val, p)){ // value belongs on sent
+		printf("goes on sent for page\t");
+		print_page(p);
 	}
 
 	page *current_page = p;
@@ -101,7 +102,8 @@ int search_and_insert(tree *t, page* p, node *n){
 			if(iter->child != NULL){
 				// Continue down the tree until we arrive at a leaf
 
-				printf("visiting the child of %i\n", iter->n->val);
+				printf("visiting the child of %i on page: \n", iter->n->val);
+				print_page(iter->child);
 				current_page = iter->child;
 				iter = iter->child->start;
 			} else {
@@ -116,6 +118,8 @@ int search_and_insert(tree *t, page* p, node *n){
 					printf("page full\n");
 					recursive_split(t, current_page, U);
 					print_tree_bfs(t);
+				} else {
+					printf("page not full, liar: %i\n", current_page->num_page_nodes);
 				}
 				return 1; // we are done searching since we reached the leaf
 			}
@@ -126,7 +130,7 @@ int search_and_insert(tree *t, page* p, node *n){
 }
 
 int is_overflow(page *p, int max_size){
-	return p->num_page_nodes > max_size;
+	return p->num_page_nodes >= max_size;
 }
 
 /*
@@ -174,7 +178,7 @@ int recursive_split(tree *t, page *p, int max_size){
 		printf("is root: %i\n", p->parent_page == NULL);
 
 		// print_page(p->parent_page);
-
+		printf("segfault here\n");
 		middle = split_page(p);
 		// check if parent has or will overflow
 

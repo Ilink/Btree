@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-const int U = 3; // this size is temporary
+const int U = 5; // this size is temporary
 
 /*
 This is unused for now.
@@ -130,6 +130,8 @@ int insert_pnode_into_page_sorted(page *p, page_node *new_page_node){
 		}
 		p->start->next = p->end;
 		p->end->prev = p->start;
+		p->num_page_nodes++;
+
 	} else { // insert in order; end and start are all setup
 		// todo: is this the most efficient way? could i use binary search?	
 		page_node *iter = p->start;
@@ -220,23 +222,28 @@ The page_node is generally inserted into another,
 existing page. This is just the way b-trees are constructed.
 */
 page_node* split_page(page* p){
-	// page *split = (page*) malloc(sizeof(page));
 	printf("\n--------splitting page-----\n\n");
 	page *split = make_page();
 	int center = ceil(p->num_page_nodes / 2); // i think this is not right in some cases?
+
 	page_node *iter = p->start;
 	page_node *center_node;
+
+
 	for(int i = 0; iter != NULL; i++){
 		if(i == center){
 			center_node = iter;
 			
 			// theoretically, the list could be small enough that this causes
 			// a segfault...fix
+
 			iter = iter->next;
 		
 			// since the b-tree has these in sorted order
 			// we just need to break off part of it
+
 			create_split_page(split, iter, p->end);
+
 
 			p->end = center_node->prev;
 			center_node->prev->next = NULL;
@@ -244,9 +251,11 @@ page_node* split_page(page* p){
 
 			center_node->child = split;
 			split->parent = center_node;
+			split->num_page_nodes = p->num_page_nodes - center;
 
 			break;
 		}
+		printf("seg %i\n", iter->next->n->val);
 		iter = iter->next;
 	}
 	printf("center: %i\n", center_node->n->val);
