@@ -85,27 +85,14 @@ int search_and_insert(tree *t, page* p, node *n){
 	page *current_page = p;
 	while(iter != NULL){
 		// Found spot for value: x < needle < y
-		// if(n->val > iter->n->val && iter->next != NULL && n->val < iter->next->n->val){
-		// if((n->val > iter->n->val && iter->next != NULL && n->val < iter->next->n->val)
-		// 	|| (n->val > iter->n->val && iter->next == NULL)){
-
-		printf("trying again\n");
-		// if(inbetween(n->val, iter->n->val, iter->next->n->val)){
 		if(inbetween(n->val, iter)){
-			printf("test\n");
 			print_page(current_page);
-			printf("test after\n");
-			if(iter == NULL){
-				printf("iter = null\n");
-			} else {
-				printf("iter != null\n");
-			}
-			printf("after\n");
 			if(iter->child != NULL){
-				// print_page(iter->child);
 				// Continue down the tree until we arrive at a leaf
-				// printf("visiting the child of %i\n", iter->n->val);
-				iter = iter->child->end;
+
+				print_page(iter->child);
+				printf("visiting the child of %i\n", iter->n->val);
+				iter = iter->child->end; // changing this to 'start' causes a segfault
 				current_page = iter->child;
 			} else {
 				// Insertion into a leaf
@@ -113,7 +100,7 @@ int search_and_insert(tree *t, page* p, node *n){
 
 				// this is a bit less efficient because it iterates over the list instead of just re-arranging the pointers here
 				// todo: re-arrange pointers either by function or manually
-				printf("inserting at leaf\n");
+				printf("inserting %i at leaf\n", iter->n->val);
 				insert_node_into_page_sorted(current_page, n);
 				print_page(current_page);
 				iter = iter->next;
