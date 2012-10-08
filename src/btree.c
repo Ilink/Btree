@@ -23,16 +23,17 @@ tree* prepare_tree(tree *t){
 	return t;
 }
 
-int inbetween(int val, int a, int b){
-	int result = 0;
-	if(b == NULL && val > a){
-		result = 1;
+int inbetween(int val, page_node* iter){
+	if(iter->next != NULL){
+		return val > iter->n->val 
+			&& val < iter->next->n->val;
+	} else {
+		return val > iter->n->val && iter->next == NULL;
 	}
-	if(val > a && val < b){
-		result = 1;
-	}
+	return 0;
 
-	return result;
+	// return((n->val > iter->n->val && iter->next != NULL && n->val < iter->next->n->val)
+	// 	|| (n->val > iter->n->val && iter->next == NULL))
 }
 
 /*
@@ -90,20 +91,22 @@ int search_and_insert(tree *t, page* p, node *n){
 
 		printf("trying again\n");
 		// if(inbetween(n->val, iter->n->val, iter->next->n->val)){
-		if(inbetween(n->val, iter->n->val, iter->next->n->val)){
+		if(inbetween(n->val, iter)){
+			printf("test\n");
 			print_page(current_page);
-			printf("found spot\n");
-			int test = (int) iter->child;
+			printf("test after\n");
+			if(iter == NULL){
+				printf("iter = null\n");
+			} else {
+				printf("iter != null\n");
+			}
 			printf("after\n");
 			if(iter->child != NULL){
 				// print_page(iter->child);
 				// Continue down the tree until we arrive at a leaf
 				// printf("visiting the child of %i\n", iter->n->val);
-				if(iter != NULL && iter->child != NULL){
-					iter = iter->child->start;
-					current_page = iter->child;
-				}
-				
+				iter = iter->child->end;
+				current_page = iter->child;
 			} else {
 				// Insertion into a leaf
 				// Only a leaf will have no children
