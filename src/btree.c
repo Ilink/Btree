@@ -86,14 +86,13 @@ int search_and_insert(tree *t, page* p, node *n){
 	while(iter != NULL){
 		// Found spot for value: x < needle < y
 		if(inbetween(n->val, iter)){
-			print_page(current_page);
+			// print_page(current_page);
 			if(iter->child != NULL){
 				// Continue down the tree until we arrive at a leaf
 
-				print_page(iter->child);
+				// print_page(iter->child);
 				printf("visiting the child of %i\n", iter->n->val);
-				iter = iter->child->start; // changing this to 'start' causes a segfault
-										 // but doing it this way doenst make insertions right
+				iter = iter->child->end; // segfault here
 				printf("we try again\n");
 				current_page = iter->child;
 			} else {

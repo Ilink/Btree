@@ -16,16 +16,23 @@ page_node* load_page(){
 
 }
 
+page_node* make_page_node(){
+	page_node *new_page_node = (page_node*) malloc(sizeof (page_node));
+	new_page_node->n = NULL;
+	new_page_node->next = NULL;
+	new_page_node->prev = NULL;
+	new_page_node->child = NULL;
+	return new_page_node;
+}
+
 /*
 @insert_into_page
 Inserts a node (n) after the page (p)
 Returns true / false
 */
 int insert_into_page(page *p, node *n){
-	page_node *new_page_node = (page_node*) malloc(sizeof (page_node));
+	page_node *new_page_node = make_page_node();
 	new_page_node->n = n;
-	new_page_node->next = NULL;
-	new_page_node->prev = NULL;
 	page_node *start_temp = p->start;
 
 	if(p->start == NULL && p->end == NULL){
