@@ -161,7 +161,7 @@ int recursive_split(tree *t, page *p, int max_size){
 		*/
 
 		middle = split_page(p);
-		printf("printing child of split\n");
+		printf("child of split: ");
 		print_page(middle->child);
 		// check if parent has or will overflow
 
@@ -258,8 +258,7 @@ void print_tree_bfs(tree* t){
 		num_per_level--;
 
 		page_node* iter = current_page->start;
-		// print_page(current_page);
-		// printf("\n[");
+		printf("\n[");
 		
 		while(iter != NULL){
 			printf("%i,", iter->n->val);
@@ -273,7 +272,7 @@ void print_tree_bfs(tree* t){
 		}
 		remaining = num_per_level;
 
-		// printf("]");
+		printf("]");
 	}
 	printf("\n\n===========\n");
 }

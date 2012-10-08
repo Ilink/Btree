@@ -18,6 +18,7 @@ int main(int argc, char **argv){
 
 	tree *t = make_test_tree(test_vals_unsorted);
 	
+	// print_tree(t);
 	print_tree_bfs(t);
 	
 	// test_split_page(p);
