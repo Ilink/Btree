@@ -23,6 +23,18 @@ tree* prepare_tree(tree *t){
 	return t;
 }
 
+int inbetween(int val, int a, int b){
+	int result = 0;
+	if(b == NULL && val > a){
+		result = 1;
+	}
+	if(val > a && val < b){
+		result = 1;
+	}
+
+	return result;
+}
+
 /*
 @insert
 Returns true or false on success/failure (respectively)
@@ -69,17 +81,29 @@ int search_and_insert(tree *t, page* p, node *n){
 		return 1;
 	}
 
+	page *current_page = p;
 	while(iter != NULL){
 		// Found spot for value: x < needle < y
 		// if(n->val > iter->n->val && iter->next != NULL && n->val < iter->next->n->val){
-		if((iter->next != NULL && n->val < iter->next->n->val)
-			|| (n->val > iter->n->val && iter->next == NULL)){
+		// if((n->val > iter->n->val && iter->next != NULL && n->val < iter->next->n->val)
+		// 	|| (n->val > iter->n->val && iter->next == NULL)){
 
+		printf("trying again\n");
+		// if(inbetween(n->val, iter->n->val, iter->next->n->val)){
+		if(inbetween(n->val, iter->n->val, iter->next->n->val)){
+			print_page(current_page);
 			printf("found spot\n");
+			int test = (int) iter->child;
+			printf("after\n");
 			if(iter->child != NULL){
+				// print_page(iter->child);
 				// Continue down the tree until we arrive at a leaf
-				printf("visiting the child");
-				iter = iter->child->end;
+				// printf("visiting the child of %i\n", iter->n->val);
+				if(iter != NULL && iter->child != NULL){
+					iter = iter->child->start;
+					current_page = iter->child;
+				}
+				
 			} else {
 				// Insertion into a leaf
 				// Only a leaf will have no children
@@ -87,30 +111,15 @@ int search_and_insert(tree *t, page* p, node *n){
 				// this is a bit less efficient because it iterates over the list instead of just re-arranging the pointers here
 				// todo: re-arrange pointers either by function or manually
 				printf("inserting at leaf\n");
-				insert_node_into_page_sorted(p, n);
-				print_page(p);
+				insert_node_into_page_sorted(current_page, n);
+				print_page(current_page);
 				iter = iter->next;
 
-				if(page_is_full(p)){
+				if(page_is_full(current_page)){
 					printf("page full\n");
-					recursive_split(t, p, U);
+					recursive_split(t, current_page, U);
 					print_tree_bfs(t);
 				}
-			}
-
-		/*
-		this part is wrong for the sake of balance
-		i dont know if this statement is even neccesary
-		*/
-		} else if(n->val > iter->n->val && iter->next == NULL){
-			// Value can fit in the list, but only at the end
-			printf("bigger than the others\n");
-			int success = insert_node_into_page_sorted(p, n);
-			print_page(p);
-			if(page_is_full(p)){
-				printf("page full\n");
-				recursive_split(t, p, U);
-				print_tree_bfs(t);
 			}
 		}
 		
