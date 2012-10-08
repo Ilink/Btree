@@ -33,7 +33,6 @@ Returns true / false
 int insert_into_page(page *p, node *n){
 	page_node *new_page_node = make_page_node();
 	new_page_node->n = n;
-	page_node *start_temp = p->start;
 
 	if(p->start == NULL && p->end == NULL){
 		// printf("empty list\n");
@@ -63,7 +62,12 @@ Returns true / false
 int insert_pn_into_page(page *p, page_node *pn){
 	pn->next = NULL;
 	pn->prev = NULL;
-	page_node *start_temp = p->start;
+	if(pn->child != NULL){
+		printf("assigning parent page\n");
+		pn->child->parent_page = p;
+	} else {
+		printf("no child page\n");
+	}
 
 	if(p->start == NULL && p->end == NULL){
 		// printf("empty list\n");
@@ -97,21 +101,26 @@ standard linked-list type stuff.
 This needs to be a binary search instead.
 */
 int insert_node_into_page_sorted(page *p, node *n){
-	page_node *new_page_node = (page_node*) malloc(sizeof (page_node));
+	page_node *new_page_node = make_page_node();
 	new_page_node->n = n;
 	new_page_node->next = NULL;
 	new_page_node->prev = NULL;
-	page_node *start_temp = p->start;
 
 	int insert_successful = insert_pnode_into_page_sorted(p, new_page_node);
 	return insert_successful;
 }
 
 int insert_pnode_into_page_sorted(page *p, page_node *new_page_node){
+	if(new_page_node->child != NULL){
+		new_page_node->child->parent_page = p;
+	}
 	if(p->start == NULL && p->end == NULL){
+		printf("seg1\n");
+
 		// printf("empty list\n");
 		p->start = new_page_node;
 	} else if(p->end == NULL){
+		printf("seg1\n");
 		// printf("no end\n");
 		if(p->start->n->val < new_page_node->n->val){
 			// printf("start < val");
@@ -124,6 +133,7 @@ int insert_pnode_into_page_sorted(page *p, page_node *new_page_node){
 		p->start->next = p->end;
 		p->end->prev = p->start;
 	} else { // insert in order; end and start are all setup
+		printf("seg2\n");
 		// todo: is this the most efficient way? could i use binary search?	
 		page_node *iter = p->start;
 		for(int i = 0; iter != NULL; i++) {
@@ -158,7 +168,7 @@ int insert_pnode_into_page_sorted(page *p, page_node *new_page_node){
 		p->num_page_nodes++;
 		return 1;
 	}
-
+	
 	return 0;
 }
 

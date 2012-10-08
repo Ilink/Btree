@@ -29,6 +29,7 @@ struct page {
 	page_node *end;
 	page_node *start;
 	page_node *parent;
+	page *parent_page;
 	int num_page_nodes;
 };
 

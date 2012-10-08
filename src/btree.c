@@ -75,7 +75,7 @@ int search_and_insert(tree *t, page* p, node *n){
 	page_node *iter = p->start;
 
 	// this pretty much happens in a new tree w/ an empty root
-	if(only_sentinel(p) || p->num_page_nodes == 1){ // broken, this isnt ever firing
+	if(only_sentinel(p) || p->num_page_nodes == 1){
 		printf("Nothing but sentinel\n");
 		insert_into_page(p, n);
 		print_page(p);
@@ -92,7 +92,7 @@ int search_and_insert(tree *t, page* p, node *n){
 
 				// print_page(iter->child);
 				printf("visiting the child of %i\n", iter->n->val);
-				iter = iter->child->end; // segfault here
+				iter = iter->child->start->next; // segfault here, maybe
 				printf("we try again\n");
 				current_page = iter->child;
 			} else {
@@ -102,9 +102,18 @@ int search_and_insert(tree *t, page* p, node *n){
 				// this is a bit less efficient because it iterates over the list instead of just re-arranging the pointers here
 				// todo: re-arrange pointers either by function or manually
 				printf("inserting %i at leaf\n", iter->n->val);
+				printf("current page is null: %i\n", current_page == NULL);
+				
 				insert_node_into_page_sorted(current_page, n);
+				printf("not seg @ insert\n");
+				printf("current page is null: %i\n", current_page == NULL);
+				// current page is nullllllll
 				print_page(current_page);
+
+
 				iter = iter->next;
+				printf("seg\n");
+
 
 				if(page_is_full(current_page)){
 					printf("page full\n");
@@ -130,6 +139,8 @@ current child
 */
 void insert_sentinel_child(page *p, page *child){
 	p->start->child = child;
+	child->parent_page = p;
+	child->parent = p->start;
 }
 
 
@@ -161,11 +172,16 @@ int recursive_split(tree *t, page *p, int max_size){
 			=> split and check if parent has overflowed
 		*/
 
+		printf("is root: %i\n", p->parent == NULL);
+		printf("is root: %i\n", p->parent_page == NULL);
+
+		// print_page(p->parent_page);
+
 		middle = split_page(p);
 		// check if parent has or will overflow
 
 		// We are at the root
-		if(p->parent == NULL){
+		if(p->parent_page == NULL){
 			printf("splitting the root\n");
 			// page *new_root = (page*) malloc(sizeof(page));
 			page *new_root = make_page();
@@ -178,9 +194,13 @@ int recursive_split(tree *t, page *p, int max_size){
 			insert_sentinel_child(new_root, p);
 			insert_pn_into_page(new_root, middle);
 		} else { // at a leaf
+			// segfault here because p->parent is a page, we need parent_page to be set properly
 			printf("splitting a leaf\n");
-			insert_pnode_into_page_sorted(p->parent, middle);
-			recursive_split(t, p->parent, max_size);
+			printf("p->parent_page %i\n", p->parent_page);
+			printf("parent null: %i\n", p->parent_page == NULL); // looks like p->parent_page is null
+			print_page(p->parent_page);
+			insert_pnode_into_page_sorted(p->parent_page, middle); // p->parent is a page_node, so is middle
+			recursive_split(t, p->parent_page, max_size);
 		}
 		printf("done splitting\n");
 	} else {
@@ -210,7 +230,6 @@ node* _find(page_node *p, int needle){
 
 void _print_tree(page *p){
 	page_node *iter = p->start;
-	
 	while(iter != NULL){
 		print_page(p);
 		if(iter->child != NULL){
