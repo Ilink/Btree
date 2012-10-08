@@ -117,7 +117,7 @@ int search_and_insert(tree *t, page* p, node *n){
 					recursive_split(t, current_page, U);
 					print_tree_bfs(t);
 				}
-				return 1;
+				return 1; // we are done searching since we reached the leaf
 			}
 		} else {
 			iter = iter->next;

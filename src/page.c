@@ -223,7 +223,7 @@ page_node* split_page(page* p){
 	// page *split = (page*) malloc(sizeof(page));
 	printf("\n--------splitting page-----\n\n");
 	page *split = make_page();
-	int center = ceil(p->num_page_nodes / 2);
+	int center = ceil(p->num_page_nodes / 2); // i think this is not right in some cases?
 	page_node *iter = p->start;
 	page_node *center_node;
 	for(int i = 0; iter != NULL; i++){
