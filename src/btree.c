@@ -92,7 +92,9 @@ int search_and_insert(tree *t, page* p, node *n){
 
 				print_page(iter->child);
 				printf("visiting the child of %i\n", iter->n->val);
-				iter = iter->child->end; // changing this to 'start' causes a segfault
+				iter = iter->child->start; // changing this to 'start' causes a segfault
+										 // but doing it this way doenst make insertions right
+				printf("we try again\n");
 				current_page = iter->child;
 			} else {
 				// Insertion into a leaf
