@@ -60,6 +60,7 @@ tree* make_test_tree(int *values){
 	t = prepare_tree(t);
 	
 	for(; *values != NULL; values++){
+		printf("val: %i\n", *values);
 		node *n = (node*) malloc(sizeof(node));
 		n->val = *values;
 		n->ext = 1;

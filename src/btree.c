@@ -53,6 +53,14 @@ int insert(node *n, tree *t){
 	search_and_insert(t, t->root, n);
 }
 
+int belongs_on_sent(int val, page* p){
+	printf("test\n");
+	if(p->start != NULL){
+		return val < p->start->next;
+	} 
+	return 0;
+}
+
 /*
 look for value in this page
 if the value is not found, look in child
@@ -82,40 +90,38 @@ int search_and_insert(tree *t, page* p, node *n){
 		return 1;
 	}
 
+	if(n->val < p->start->next){ // value belongs on sent
+		printf("goes on sent\n");
+	}
+
 	page *current_page = p;
 	while(iter != NULL){
 		// Found spot for value: x < needle < y
-		if(inbetween(n->val, iter)){
-			// print_page(current_page);
+		if(inbetween(n->val, iter) || belongs_on_sent(n->val, current_page)){
 			if(iter->child != NULL){
 				// Continue down the tree until we arrive at a leaf
 
-				// print_page(iter->child);
 				printf("visiting the child of %i\n", iter->n->val);
-				iter = iter->child->start->next; // segfault here, maybe
-				printf("we try again\n");
 				current_page = iter->child;
-				printf("current page is null: %i\n", current_page == NULL);
-				
+				iter = iter->child->start;
 			} else {
 				// Insertion into a leaf
 				// Only a leaf will have no children
 
-				// current page is nullllllll
-				printf("current page is null: %i\n", current_page == NULL);
+				printf("inserting %i into page\n", n->val);
 				insert_node_into_page_sorted(current_page, n);
 				print_page(current_page);
-				iter = iter->next;
-
+				
 				if(page_is_full(current_page)){
 					printf("page full\n");
 					recursive_split(t, current_page, U);
 					print_tree_bfs(t);
 				}
+				return 1;
 			}
-		}
-		
-		iter = iter->next;
+		} else {
+			iter = iter->next;
+		}		
 	}
 }
 

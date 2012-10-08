@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-const int U = 6; // this size is temporary
+const int U = 3; // this size is temporary
 
 /*
 This is unused for now.
@@ -115,12 +115,10 @@ int insert_pnode_into_page_sorted(page *p, page_node *new_page_node){
 		new_page_node->child->parent_page = p;
 	}
 	if(p->start == NULL && p->end == NULL){
-		printf("seg1\n");
 
 		// printf("empty list\n");
 		p->start = new_page_node;
 	} else if(p->end == NULL){
-		printf("seg1\n");
 		// printf("no end\n");
 		if(p->start->n->val < new_page_node->n->val){
 			// printf("start < val");
@@ -133,7 +131,6 @@ int insert_pnode_into_page_sorted(page *p, page_node *new_page_node){
 		p->start->next = p->end;
 		p->end->prev = p->start;
 	} else { // insert in order; end and start are all setup
-		printf("seg2\n");
 		// todo: is this the most efficient way? could i use binary search?	
 		page_node *iter = p->start;
 		for(int i = 0; iter != NULL; i++) {
