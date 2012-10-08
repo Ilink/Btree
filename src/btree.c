@@ -95,25 +95,17 @@ int search_and_insert(tree *t, page* p, node *n){
 				iter = iter->child->start->next; // segfault here, maybe
 				printf("we try again\n");
 				current_page = iter->child;
+				printf("current page is null: %i\n", current_page == NULL);
+				
 			} else {
 				// Insertion into a leaf
 				// Only a leaf will have no children
 
-				// this is a bit less efficient because it iterates over the list instead of just re-arranging the pointers here
-				// todo: re-arrange pointers either by function or manually
-				printf("inserting %i at leaf\n", iter->n->val);
-				printf("current page is null: %i\n", current_page == NULL);
-				
-				insert_node_into_page_sorted(current_page, n);
-				printf("not seg @ insert\n");
-				printf("current page is null: %i\n", current_page == NULL);
 				// current page is nullllllll
+				printf("current page is null: %i\n", current_page == NULL);
+				insert_node_into_page_sorted(current_page, n);
 				print_page(current_page);
-
-
 				iter = iter->next;
-				printf("seg\n");
-
 
 				if(page_is_full(current_page)){
 					printf("page full\n");
