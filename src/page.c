@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-const int U = 4; // this size is temporary
+const int U = 5; // this size is temporary
 
 /*
 This is unused for now.
@@ -190,6 +190,11 @@ page_node* search_page_ceil(int val, page* p){
 	return false;
 }
 
+void create_split_page(page* p, page_node* start, page_node* end){
+	p->start->next = start;
+	p->end = end;
+}
+
 /*
 @split_page
 Breaks a page into two pages, down the middle.
@@ -217,12 +222,7 @@ page_node* split_page(page* p){
 
 			// since the b-tree has these in sorted order
 			// we just need to break off part of it
-			split->start = iter;
-			split->end = p->end;
-
-			/*
-			set the child properly
-			*/
+			create_split_page(split, iter, p->end);
 
 			p->end = center_node->prev;
 			center_node->prev->next = NULL;
@@ -245,7 +245,7 @@ int remove_page_node(page_node *n){
 	prev->next = next;
 	next->prev = prev;
 
-	// Free could go here
+	// Free could go here?
 }
 
 int page_is_full(page *p){

@@ -1,5 +1,6 @@
 #include <stdbool.h>
 #include <stdio.h>
+#include <glib.h>
 
 #include "page.h"
 #include "btree.h"
@@ -91,8 +92,7 @@ int search_and_insert(tree *t, page* p, node *n){
 
 				if(page_is_full(p)){
 					printf("page full\n");
-					// recursive_split(t, p, 3);
-					// perform recursive split operation
+					recursive_split(t, p, U);
 				} else {
 					printf("page not full\n");
 				}
@@ -104,6 +104,7 @@ int search_and_insert(tree *t, page* p, node *n){
 			print_page(p);
 			if(page_is_full(p)){
 				printf("page full\n");
+				recursive_split(t, p, U);
 			}
 		} else if(iter->n->val == n->val){
 			printf("repeat value: %i and %i\n", iter->n->val, n->val);
@@ -149,7 +150,7 @@ The next slot belongs to the middle split result.
 [1,2,3]  [4,5,6]
 */
 int recursive_split(tree *t, page *p, int max_size){
-	if(p->num_page_nodes > max_size){
+	if(page_is_full(p)){
 		printf("starting split\n");
 		page_node *middle;
 		/*
@@ -160,6 +161,8 @@ int recursive_split(tree *t, page *p, int max_size){
 		*/
 
 		middle = split_page(p);
+		printf("printing child of split\n");
+		print_page(middle->child);
 		// check if parent has or will overflow
 
 		// We are at the root
@@ -206,46 +209,83 @@ node* _find(page_node *p, int needle){
 
 }
 
+void _print_tree(page *p){
+	page_node *iter = p->start;
+	
+	while(iter != NULL){
+		print_page(p);
+		if(iter->child != NULL){
+			_print_tree(iter->child);
+		}
+		iter = iter->next;
+	}
+}
+
 void print_tree(tree* t){
-	page_node *iter = t->root->start->next; // skip the sentinel
+	page_node *iter = t->root; // skip the sentinel
 
-	printf("\nRoot: [");
-	while(iter != NULL){
-		printf("%i,", iter->n->val);
-		iter = iter->next;
-	}
-	printf("]");
+	_print_tree(t->root);
 
-	iter = t->root->start->child->start->next;
+	// printf("Root:");
+	// print_page(iter);
+	// // printf("\n");
 
-	printf("\nSent child: [");
-	while(iter != NULL){
-		printf("%i,", iter->n->val);
-		iter = iter->next;
-	}
-	printf("]");
+	// iter = t->root->start->child;
 
-	iter = t->root->start->next->child->start->next;
-	printf("\nFirst child: [");
-	while(iter != NULL){
-		printf("%i,", iter->n->val);
-		iter = iter->next;
-	}
-	printf("]");
+	// printf("Sent child:");
+	// print_page(iter);
+
+
+	// iter = t->root->start->next->child;
+	// print_page(iter);
+
+	// iter = t->root->start->child->start->child;
+	// print_page(iter);
 
 }
 
-void _print_tree(tree *t, page *p){
+// BFS search
+void print_tree_bfs(tree* t){
+	printf("\n====Tree===\n");
+	int num_per_level = 1;
 
+	int remaining = 0;
+	GQueue* queue = g_queue_new();
+	g_queue_push_tail(queue, (gpointer) t->root);
+	
+	page* current_page;
+	while(current_page = (page*) g_queue_pop_head(queue)){
+		num_per_level--;
+
+		page_node* iter = current_page->start;
+		// print_page(current_page);
+		// printf("\n[");
+		
+		while(iter != NULL){
+			printf("%i,", iter->n->val);
+			
+			if(iter->child != NULL){
+				num_per_level++;
+				g_queue_push_tail(queue, (gpointer) iter->child);
+			}
+			
+			iter = iter->next;
+		}
+		remaining = num_per_level;
+
+		// printf("]");
+	}
+	printf("\n\n===========\n");
 }
+
 
 void print_page(page* p){
 	page_node *iter = p->start;
-	printf("number of nodes: %i\n", p->num_page_nodes);
-	printf("\n[");
+	// printf("number of nodes: %i\n", p->num_page_nodes);
+	printf("[");
 	while(iter != NULL){
 		printf("%i,", iter->n->val);
 		iter = iter->next;
 	}
-	printf("]");
+	printf("]\n");
 }
