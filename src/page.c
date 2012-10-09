@@ -244,14 +244,14 @@ page_node* split_page(page* p){
 
 			create_split_page(split, iter, p->end);
 
-
 			p->end = center_node->prev;
 			center_node->prev->next = NULL;
 			center_node->prev = NULL;
 
 			center_node->child = split;
 			split->parent = center_node;
-			split->num_page_nodes = p->num_page_nodes - center;
+			split->num_page_nodes = p->num_page_nodes - center; //off by one?
+			p->num_page_nodes = center; // also off by one?
 
 			break;
 		}
