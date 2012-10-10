@@ -275,6 +275,7 @@ int remove_page_node(page_node *n){
 	next->prev = prev;
 
 	// Free could go here?
+	// i dont really care about delete behavior
 }
 
 int page_is_full(page *p){

@@ -12,14 +12,10 @@ with a sentinel node representing the lowest
 value in the tree.
 */
 tree* prepare_tree(tree *t){
-	// page* p = (page*) malloc(sizeof(page));
 	page* p = make_page();
 	printf("making page: \n");
 	print_page(p);
 	t->root = p;
-	// node* n = (node*) malloc(sizeof(node));
-	// n->val = NULL;
-	// insert_into_page(t->root, n);
 	return t;
 }
 
@@ -31,9 +27,6 @@ int inbetween(int val, page_node* iter){
 		return val > iter->n->val && iter->next == NULL;
 	}
 	return 0;
-
-	// return((n->val > iter->n->val && iter->next != NULL && n->val < iter->next->n->val)
-	// 	|| (n->val > iter->n->val && iter->next == NULL))
 }
 
 /*
@@ -117,7 +110,7 @@ int search_and_insert(tree *t, page* p, node *n){
 				if(page_is_full(current_page)){
 					printf("page full\n");
 					recursive_split(t, current_page, U);
-					print_tree_bfs(t);
+					print_tree(t);
 				} else {
 					printf("page not full, liar: %i\n", current_page->num_page_nodes);
 				}
@@ -167,36 +160,22 @@ int recursive_split(tree *t, page *p, int max_size){
 	if(page_is_full(p)){
 		printf("starting split\n");
 		page_node *middle;
-		/*
-		page is root (if parent is null)
-			=> split and make new root
-		page isn't root (has parent)
-			=> split and check if parent has overflowed
-		*/
 
 		printf("is root: %i\n", p->parent == NULL);
 		printf("is root: %i\n", p->parent_page == NULL);
 
-		// print_page(p->parent_page);
 		printf("segfault here\n");
 		middle = split_page(p);
-		// check if parent has or will overflow
 
 		// We are at the root
 		if(p->parent_page == NULL){
 			printf("splitting the root\n");
-			// page *new_root = (page*) malloc(sizeof(page));
 			page *new_root = make_page();
 
 			t->root = new_root;
-			/*
-				middle node inserted into new root
-				set the remaining former page as the sentinel's child
-			*/
 			insert_sentinel_child(new_root, p);
 			insert_pn_into_page(new_root, middle);
 		} else { // at a leaf
-			// segfault here because p->parent is a page, we need parent_page to be set properly
 			printf("splitting a leaf\n");
 			printf("p->parent_page %i\n", p->parent_page);
 			printf("parent null: %i\n", p->parent_page == NULL); // looks like p->parent_page is null
@@ -241,31 +220,8 @@ void _print_tree(page *p){
 	}
 }
 
-void print_tree(tree* t){
-	page_node *iter = t->root; // skip the sentinel
-
-	_print_tree(t->root);
-
-	// printf("Root:");
-	// print_page(iter);
-	// // printf("\n");
-
-	// iter = t->root->start->child;
-
-	// printf("Sent child:");
-	// print_page(iter);
-
-
-	// iter = t->root->start->next->child;
-	// print_page(iter);
-
-	// iter = t->root->start->child->start->child;
-	// print_page(iter);
-
-}
-
 // BFS search
-void print_tree_bfs(tree* t){
+void print_tree(tree* t){
 	printf("\n====Tree===\n");
 	int num_per_level = 1;
 
@@ -300,7 +256,6 @@ void print_tree_bfs(tree* t){
 
 void print_page(page* p){
 	page_node *iter = p->start;
-	// printf("number of nodes: %i\n", p->num_page_nodes);
 	printf("[");
 	while(iter != NULL){
 		printf("%i,", iter->n->val);

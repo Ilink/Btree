@@ -15,11 +15,10 @@ int main(int argc, char **argv){
 
 	int test_vals_unsorted[] = {4,3,1,9,6,10,	12,15,17,20,30,40,50,100, NULL};
 	// p = make_sorted_test_page(test_vals_unsorted);
+	// test_split_page(p);
 
 	tree *t = make_test_tree(test_vals_unsorted);
 	
-	// print_tree(t);
-	print_tree_bfs(t);
-	
-	// test_split_page(p);
+
+	print_tree(t);
 }

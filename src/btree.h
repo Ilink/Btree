@@ -14,6 +14,5 @@ node* find(int needle);
 tree* prepare_tree(tree *t);
 void print_tree(tree* t);
 void print_page(page* p);
-void print_tree_bfs(tree* t);
 
 #endif
