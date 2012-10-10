@@ -98,7 +98,6 @@ This might have some duplicate code from insert_into_page
 but it shouldn't really be a big deal since it's all pretty 
 standard linked-list type stuff.
 
-This needs to be a binary search instead.
 */
 int insert_node_into_page_sorted(page *p, node *n){
 	page_node *new_page_node = make_page_node();
@@ -133,7 +132,6 @@ int insert_pnode_into_page_sorted(page *p, page_node *new_page_node){
 		p->num_page_nodes++;
 
 	} else { // insert in order; end and start are all setup
-		// todo: is this the most efficient way? could i use binary search?	
 		page_node *iter = p->start;
 		for(int i = 0; iter != NULL; i++) {
 			// printf("iter (%i) val: %i\n", i, iter->n->val);
@@ -187,11 +185,6 @@ EG:
 	p => [1,3,6,10,20]
 	needle => 8
 	Would find 10, not 20.
-
-I think this could be sped up with more of a binary
-search approach. But i will worry about that later.
-	=> chop until value stops being larger, is smaller
-	=> then go up the list until the larger value is found
 
 Assumes the list (the page) is in sorted order.
 */
@@ -291,4 +284,8 @@ page* make_page(){
 	n->val = NULL;
 	insert_into_page(p, n);
 	return p;
+}
+
+page_node* bsearch(page* p, int needle){
+
 }

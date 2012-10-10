@@ -71,7 +71,7 @@ so if you a find a value in the page that is like:
 	and we are close enough that we can insert at this page
 
 */
-// todo: Let's make this a binary search later!
+// this could be sped up with a skip list instead of a linkedlist
 int search_and_insert(tree *t, page* p, node *n){
 	page_node *iter = p->start;
 
